@@ -1,0 +1,10 @@
+Visiting main class. Added main class: ClassInfo{name='Factorial', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+Visiting class: ClassInfo{name='Fac', fields={}, methods={}}
+Added method: ComputeFac of type BOOLEAN to class Fac
+Added local variable: num_aux of type INT to method ComputeFac
+Symbol Table:
+Class: Factorial
+ClassInfo{name='Factorial', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+Class: Fac
+ClassInfo{name='Fac', fields={}, methods={ComputeFac: MethodInfo{name='ComputeFac', returnType='BOOLEAN', parameters={}, localVariables={num_aux: INT}}}}
+

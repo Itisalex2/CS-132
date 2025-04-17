@@ -1,0 +1,25 @@
+Visiting main class. Added main class: ClassInfo{name='BubbleSort', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+Visiting class: ClassInfo{name='BBS', fields={}, methods={}}
+Added field: number of type INT_ARRAY to class BBS
+Added field: size of type INT to class BBS
+Added method: Start of type INT to class BBS
+Added local variable: aux01 of type INT to method Start
+Added method: Sort of type INT to class BBS
+Added local variable: nt of type INT to method Sort
+Added local variable: i of type INT to method Sort
+Added local variable: aux02 of type INT to method Sort
+Added local variable: aux04 of type INT to method Sort
+Added local variable: aux05 of type INT to method Sort
+Added local variable: aux06 of type INT to method Sort
+Added local variable: aux07 of type INT to method Sort
+Added local variable: j of type INT to method Sort
+Added local variable: t of type INT to method Sort
+Added method: Print of type INT to class BBS
+Added local variable: j of type INT to method Print
+Added method: Init of type INT to class BBS
+Symbol Table:
+Class: BBS
+ClassInfo{name='BBS', fields={number: INT_ARRAY, size: INT}, methods={Print: MethodInfo{name='Print', returnType='INT', parameters={}, localVariables={j: INT}}, Init: MethodInfo{name='Init', returnType='INT', parameters={}, localVariables={}}, Start: MethodInfo{name='Start', returnType='INT', parameters={}, localVariables={aux01: INT}}, Sort: MethodInfo{name='Sort', returnType='INT', parameters={}, localVariables={aux05: INT, t: INT, aux04: INT, nt: INT, aux07: INT, aux06: INT, i: INT, j: INT, aux02: INT}}}}
+Class: BubbleSort
+ClassInfo{name='BubbleSort', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+

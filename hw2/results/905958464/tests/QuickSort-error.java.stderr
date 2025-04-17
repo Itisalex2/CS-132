@@ -1,0 +1,24 @@
+Visiting main class. Added main class: ClassInfo{name='QuickSort', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+Visiting class: ClassInfo{name='QS', fields={}, methods={}}
+Added field: number of type INT to class QS
+Added field: size of type INT to class QS
+Added method: Start of type INT to class QS
+Added local variable: aux01 of type INT to method Start
+Added method: Sort of type INT to class QS
+Added local variable: v of type INT to method Sort
+Added local variable: i of type INT to method Sort
+Added local variable: j of type INT to method Sort
+Added local variable: nt of type INT to method Sort
+Added local variable: t of type INT to method Sort
+Added local variable: cont01 of type BOOLEAN to method Sort
+Added local variable: cont02 of type BOOLEAN to method Sort
+Added local variable: aux03 of type INT to method Sort
+Added method: Print of type INT to class QS
+Added local variable: j of type INT to method Print
+Added method: Init of type INT to class QS
+Symbol Table:
+Class: QuickSort
+ClassInfo{name='QuickSort', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+Class: QS
+ClassInfo{name='QS', fields={number: INT, size: INT}, methods={Print: MethodInfo{name='Print', returnType='INT', parameters={}, localVariables={j: INT}}, Init: MethodInfo{name='Init', returnType='INT', parameters={}, localVariables={}}, Start: MethodInfo{name='Start', returnType='INT', parameters={}, localVariables={aux01: INT}}, Sort: MethodInfo{name='Sort', returnType='INT', parameters={}, localVariables={t: INT, v: INT, nt: INT, i: INT, j: INT, aux03: INT, cont02: BOOLEAN, cont01: BOOLEAN}}}}
+

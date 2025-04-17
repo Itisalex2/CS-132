@@ -1,0 +1,27 @@
+Visiting main class. Added main class: ClassInfo{name='LinearSearch', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+Visiting class: ClassInfo{name='LS', fields={}, methods={}}
+Added field: number of type INT_ARRAY to class LS
+Added field: size of type INT to class LS
+Added method: Start of type INT to class LS
+Added local variable: aux01 of type INT to method Start
+Added local variable: aux02 of type INT to method Start
+Added method: Print of type INT to class LS
+Added local variable: j of type INT to method Print
+Added method: Search of type INT to class LS
+Added local variable: j of type INT to method Search
+Added local variable: ls01 of type BOOLEAN to method Search
+Added local variable: ifound of type INT to method Search
+Added local variable: aux01 of type INT to method Search
+Added local variable: aux02 of type INT to method Search
+Added local variable: nt of type INT to method Search
+Added method: Init of type INT to class LS
+Added local variable: j of type INT to method Init
+Added local variable: k of type INT to method Init
+Added local variable: aux01 of type INT to method Init
+Added local variable: aux02 of type INT to method Init
+Symbol Table:
+Class: LS
+ClassInfo{name='LS', fields={number: INT_ARRAY, size: INT}, methods={Print: MethodInfo{name='Print', returnType='INT', parameters={}, localVariables={j: INT}}, Init: MethodInfo{name='Init', returnType='INT', parameters={}, localVariables={aux01: INT, j: INT, k: INT, aux02: INT}}, Start: MethodInfo{name='Start', returnType='INT', parameters={}, localVariables={aux01: INT, aux02: INT}}, Search: MethodInfo{name='Search', returnType='INT', parameters={}, localVariables={nt: INT, ifound: INT, aux01: INT, j: INT, ls01: BOOLEAN, aux02: INT}}}}
+Class: LinearSearch
+ClassInfo{name='LinearSearch', fields={}, methods={main: MethodInfo{name='main', returnType='void', parameters={a: STRING_ARRAY}, localVariables={}}}}
+
