@@ -6,24 +6,24 @@ import symbolTable.SymbolTable;
 
 public class TypecheckContext {
   private final SymbolTable symbolTable;
-  private final ClassInfo currentClass;
-  private final MethodInfo currentMethod;
+  private final ClassInfo currentClassInfo;
+  private final MethodInfo currentMethodInfo;
 
   public TypecheckContext(SymbolTable symbolTable, ClassInfo classInfo, MethodInfo methodInfo) {
     this.symbolTable = symbolTable;
-    this.currentClass = classInfo;
-    this.currentMethod = methodInfo;
+    this.currentClassInfo = classInfo;
+    this.currentMethodInfo = methodInfo;
   }
 
   public SymbolTable getSymbolTable() {
     return symbolTable;
   }
 
-  public ClassInfo getCurrentClass() {
-    return currentClass;
+  public ClassInfo getCurrentClassInfo() {
+    return currentClassInfo;
   }
 
-  public MethodInfo getCurrentMethod() {
-    return currentMethod;
+  public MethodInfo getCurrentMethodInfo() {
+    return currentMethodInfo;
   }
 }

@@ -42,8 +42,27 @@ public class ClassInfo {
     return fields;
   }
 
+  public MJType getFieldType(String fieldName) {
+    if (fields.containsKey(fieldName)) {
+      return fields.get(fieldName);
+    }
+
+    System.err.println("Field " + fieldName + " not found in class " + className);
+    return null;
+  }
+
   public Map<String, MethodInfo> getMethods() {
     return methods;
+  }
+
+  public MethodInfo getMethodInfo(String methodName) {
+    if (methods.containsKey(methodName)) {
+      return methods.get(methodName);
+    }
+
+    System.err.println("Method " + methodName + " not found in class " + className);
+    OutputMessage.outputErrorAndExit();
+    throw new AssertionError("Unreachable");
   }
 
   public MethodInfo getMainMethodInfo() {

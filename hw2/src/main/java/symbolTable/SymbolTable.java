@@ -27,10 +27,6 @@ public class SymbolTable {
     throw new AssertionError("Unreachable");
   }
 
-  public Map<String, ClassInfo> getSymbolTable() {
-    return symbolTable;
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

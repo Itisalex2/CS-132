@@ -2,6 +2,7 @@ package myVisitor;
 
 import context.ClassMethodContext;
 import minijava.syntaxtree.ClassDeclaration;
+import minijava.syntaxtree.FormalParameter;
 import minijava.syntaxtree.MainClass;
 import minijava.syntaxtree.MethodDeclaration;
 import minijava.syntaxtree.NodeListOptional;
@@ -69,6 +70,25 @@ public class SymbolTableBuilderVisitor extends GJVoidDepthFirst<ClassMethodConte
   }
 
   @Override
+  public void visit(MethodDeclaration n, ClassMethodContext associatedClassMethodContext) {
+    MJType returnType = TypeFactory.getTypeFromNodeChoice(n.f1.f0);
+    String methodName = n.f2.f0.toString();
+    ClassInfo classInfo = associatedClassMethodContext.getClassInfo();
+    NodeOptional paramList = n.f4;
+    NodeListOptional varList = n.f7;
+
+    MethodInfo methodInfo = new MethodInfo(methodName, returnType);
+    classInfo.addMethod(methodName, methodInfo);
+    System.err
+        .println("Added method: " + methodName + " of type " + returnType + " to class " + classInfo.getClassName());
+
+    ClassMethodContext classMethodContext = new ClassMethodContext(classInfo, methodInfo);
+
+    paramList.accept(this, classMethodContext);
+    varList.accept(this, classMethodContext);
+  }
+
+  @Override
   public void visit(VarDeclaration n, ClassMethodContext associatedClassMethodContext) {
     MJType varType = TypeFactory.getTypeFromNodeChoice(n.f0.f0);
     String varName = n.f1.f0.toString();
@@ -87,21 +107,11 @@ public class SymbolTableBuilderVisitor extends GJVoidDepthFirst<ClassMethodConte
   }
 
   @Override
-  public void visit(MethodDeclaration n, ClassMethodContext associatedClassMethodContext) {
-    MJType returnType = TypeFactory.getTypeFromNodeChoice(n.f1.f0);
-    String methodName = n.f2.f0.toString();
-    ClassInfo classInfo = associatedClassMethodContext.getClassInfo();
-    NodeOptional paramList = n.f4;
-    NodeListOptional varList = n.f7;
+  public void visit(FormalParameter n, ClassMethodContext associatedClassMethodContext) {
+    MethodInfo methodInfo = associatedClassMethodContext.getMethodInfo();
+    MJType paramType = TypeFactory.getTypeFromNodeChoice(n.f0.f0);
+    String paramName = n.f1.f0.toString();
 
-    MethodInfo methodInfo = new MethodInfo(methodName, returnType);
-    classInfo.addMethod(methodName, methodInfo);
-    System.err
-        .println("Added method: " + methodName + " of type " + returnType + " to class " + classInfo.getClassName());
-
-    ClassMethodContext classMethodContext = new ClassMethodContext(classInfo, methodInfo);
-
-    paramList.accept(this, classMethodContext);
-    varList.accept(this, classMethodContext);
+    methodInfo.addParameter(paramName, paramType);
   }
 }

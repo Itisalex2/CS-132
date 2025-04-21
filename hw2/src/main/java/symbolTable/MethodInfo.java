@@ -1,7 +1,9 @@
 package symbolTable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import constant.OutputMessage;
@@ -30,8 +32,17 @@ public class MethodInfo {
     return parameters;
   }
 
-  public Map<String, MJType> getLocalVariables() {
-    return localVariables;
+  public List<MJType> getParameterTypes() {
+    return new ArrayList<>(parameters.values());
+  }
+
+  public MJType getParameterType(String paramName) {
+    if (parameters.containsKey(paramName)) {
+      return parameters.get(paramName);
+    }
+
+    System.err.println("Parameter " + paramName + " does not exist in method " + methodName);
+    return null;
   }
 
   public void addParameter(String paramName, MJType paramType) {
@@ -42,7 +53,25 @@ public class MethodInfo {
     parameters.put(paramName, paramType);
   }
 
+  public Map<String, MJType> getLocalVariables() {
+    return localVariables;
+  }
+
+  public MJType getLocalVariableType(String varName) {
+    if (localVariables.containsKey(varName)) {
+      return localVariables.get(varName);
+    }
+
+    System.err.println("Local variable " + varName + " does not exist in method " + methodName);
+    return null;
+  }
+
   public void addLocalVariable(String varName, MJType varType) {
+    if (parameters.containsKey(varName)) {
+      System.err.println("Local variable " + varName + " already exists in method parameters" + methodName);
+      OutputMessage.outputErrorAndExit();
+    }
+
     if (localVariables.containsKey(varName)) {
       System.err.println("Local variable " + varName + " already exists in method " + methodName);
       OutputMessage.outputErrorAndExit();
