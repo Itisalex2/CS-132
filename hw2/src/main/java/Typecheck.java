@@ -17,6 +17,11 @@ public class Typecheck {
       SymbolTable symbolTable = symbolTableBuilderVisitor.getSymbolTable();
       System.err.println(symbolTable);
 
+      if (symbolTable.containsCycle()) {
+        System.err.println("Symbol table contains a cycle.");
+        OutputMessage.outputErrorAndExit();
+      }
+
       TypecheckVisitor typecheckVisitor = new TypecheckVisitor();
       TypecheckContext typecheckContext = new TypecheckContext(symbolTable, null, null);
       root.accept(typecheckVisitor, typecheckContext);

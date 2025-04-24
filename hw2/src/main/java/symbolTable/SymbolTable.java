@@ -1,7 +1,9 @@
 package symbolTable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import constant.OutputMessage;
 
@@ -25,6 +27,25 @@ public class SymbolTable {
     System.err.println("Class " + className + " not found in the symbol table.");
     OutputMessage.outputErrorAndExit();
     throw new AssertionError("Unreachable");
+  }
+
+  public boolean containsCycle() {
+    for (ClassInfo current : symbolTable.values()) {
+      Set<String> visited = new HashSet<>();
+      String className = current.getClassName();
+      visited.add(className);
+
+      String superClassName = current.getSuperClassName();
+      while (superClassName != null) {
+        if (visited.contains(superClassName)) {
+          return true;
+        }
+        visited.add(superClassName);
+        ClassInfo parent = getClassInfo(superClassName);
+        superClassName = parent.getSuperClassName();
+      }
+    }
+    return false;
   }
 
   @Override

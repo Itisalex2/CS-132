@@ -8,7 +8,7 @@ import constant.OutputMessage;
 
 public class ClassInfo {
   private String className;
-  // private String superClassName;
+  private String superClassName = null;
   private Map<String, MJType> fields = new HashMap<String, MJType>();
   private Map<String, MethodInfo> methods = new HashMap<String, MethodInfo>();
 
@@ -36,6 +36,21 @@ public class ClassInfo {
 
   public String getClassName() {
     return className;
+  }
+
+  public String getSuperClassName() {
+    return superClassName;
+  }
+
+  public void setSuperClassName(String superClassName) {
+    if (this.superClassName != null) {
+      System.err
+          .println("Super class name already set for class " + className +
+              ". Superclass: " + getSuperClassName());
+      OutputMessage.outputErrorAndExit();
+    }
+
+    this.superClassName = superClassName;
   }
 
   public Map<String, MJType> getFields() {
@@ -78,7 +93,11 @@ public class ClassInfo {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("ClassInfo{name='").append(className).append("', fields={");
+    sb.append("ClassInfo{name='").append(className);
+    if (superClassName != null) {
+      sb.append("', extends='").append(superClassName);
+    }
+    sb.append("', fields={");
     fields.forEach((fieldName, fieldType) -> sb.append(fieldName).append(": ").append(fieldType).append(", "));
     if (!fields.isEmpty()) {
       sb.setLength(sb.length() - 2);

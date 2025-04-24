@@ -14,6 +14,7 @@ import minijava.syntaxtree.ArrayLookup;
 import minijava.syntaxtree.AssignmentStatement;
 import minijava.syntaxtree.BracketExpression;
 import minijava.syntaxtree.ClassDeclaration;
+import minijava.syntaxtree.ClassExtendsDeclaration;
 import minijava.syntaxtree.CompareExpression;
 import minijava.syntaxtree.Expression;
 import minijava.syntaxtree.ExpressionList;
@@ -94,7 +95,19 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
     return null;
   }
 
-  // TODO: Class extends declaration
+  @Override
+  public MJType visit(ClassExtendsDeclaration n, TypecheckContext typecheckContext) {
+    SymbolTable symbolTable = typecheckContext.getSymbolTable();
+    String className = n.f1.f0.toString();
+    NodeListOptional methodDeclarations = n.f6;
+
+    ClassInfo classInfo = symbolTable.getClassInfo(className);
+
+    TypecheckContext newTypeCheckContext = new TypecheckContext(symbolTable, classInfo, null);
+    methodDeclarations.accept(this, newTypeCheckContext);
+
+    return null;
+  }
 
   @Override
   public MJType visit(MethodDeclaration n, TypecheckContext typecheckContext) {

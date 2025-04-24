@@ -2,6 +2,7 @@ package myVisitor;
 
 import context.ClassMethodContext;
 import minijava.syntaxtree.ClassDeclaration;
+import minijava.syntaxtree.ClassExtendsDeclaration;
 import minijava.syntaxtree.FormalParameter;
 import minijava.syntaxtree.MainClass;
 import minijava.syntaxtree.MethodDeclaration;
@@ -62,6 +63,24 @@ public class SymbolTableBuilderVisitor extends GJVoidDepthFirst<ClassMethodConte
 
     symbolTable.addClass(className, classInfo);
 
+    ClassMethodContext classContext = new ClassMethodContext(classInfo, null);
+    System.err.println("Visiting class: " + classInfo);
+
+    classFields.accept(this, classContext);
+    methodDeclarations.accept(this, classContext);
+  }
+
+  @Override
+  public void visit(ClassExtendsDeclaration n, ClassMethodContext associatedClassMethodContext) {
+    String className = n.f1.f0.toString();
+    String superClassName = n.f3.f0.toString();
+    NodeListOptional classFields = n.f5;
+    NodeListOptional methodDeclarations = n.f6;
+
+    ClassInfo classInfo = new ClassInfo(className);
+    classInfo.setSuperClassName(superClassName);
+
+    symbolTable.addClass(className, classInfo);
     ClassMethodContext classContext = new ClassMethodContext(classInfo, null);
     System.err.println("Visiting class: " + classInfo);
 
