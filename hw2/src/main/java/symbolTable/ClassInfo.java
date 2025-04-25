@@ -66,6 +66,10 @@ public class ClassInfo {
     return null;
   }
 
+  public boolean containsField(String fieldName) {
+    return fields.containsKey(fieldName);
+  }
+
   public Map<String, MethodInfo> getMethods() {
     return methods;
   }
@@ -88,6 +92,10 @@ public class ClassInfo {
     System.err.println("Main method not found in class " + className);
     OutputMessage.outputErrorAndExit();
     throw new AssertionError("Unreachable");
+  }
+
+  public boolean containsMethod(String methodName) {
+    return methods.containsKey(methodName);
   }
 
   @Override

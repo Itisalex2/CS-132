@@ -123,7 +123,7 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
     TypecheckContext newTypeCheckContext = new TypecheckContext(symbolTable, classInfo, methodInfo);
     statements.accept(this, newTypeCheckContext);
     MJType type = expression.accept(this, newTypeCheckContext);
-    if (!returnType.equals(type)) { // TODO: Change this to subtype later
+    if (!symbolTable.isSubtype(type, returnType)) {
       System.err.println("Return type mismatch in method " + methodName + " in class " + classInfo.getClassName());
       OutputMessage.outputErrorAndExit();
     }
@@ -137,14 +137,15 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
   }
 
   @Override
-  public MJType visit(AssignmentStatement n, TypecheckContext typecheckContext) { // TODO: subtyping
+  public MJType visit(AssignmentStatement n, TypecheckContext typecheckContext) {
+    SymbolTable symbolTable = typecheckContext.getSymbolTable();
     Identifier identifier = n.f0;
     Expression expression = n.f2;
 
     MJType identifierType = identifier.accept(this, typecheckContext);
     MJType expressionType = expression.accept(this, typecheckContext);
 
-    if (!expressionType.equals(identifierType)) {
+    if (!symbolTable.isSubtype(expressionType, identifierType)) {
       System.err.println("Type mismatch in assignment statement. Identifier type: " + identifierType
           + ", expression type: " + expressionType);
       OutputMessage.outputErrorAndExit();
@@ -395,7 +396,7 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
       MJType expected = parameterTypes.get(i);
       MJType actual = argumentTypes.get(i);
 
-      if (!actual.equals(expected)) { // TODO: add subtype check
+      if (!symbolTable.isSubtype(actual, expected)) {
         System.err.println("Argument type mismatch at index " + i +
             " in method '" + methodName + "': expected " + expected + ", got " + actual);
         OutputMessage.outputErrorAndExit();
@@ -431,10 +432,11 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
     String identifierName = n.f0.toString();
     ClassInfo classInfo = typecheckContext.getCurrentClassInfo();
     MethodInfo methodInfo = typecheckContext.getCurrentMethodInfo();
+    SymbolTable symbolTable = typecheckContext.getSymbolTable();
 
     MJType type = null;
 
-    type = methodInfo.getLocalVariableType(identifierName); // TODO: Maybe add null check
+    type = methodInfo.getLocalVariableType(identifierName);
 
     if (type != null) {
       return type;
@@ -450,6 +452,18 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
 
     if (type != null) {
       return type;
+    }
+
+    String superClassName = classInfo.getSuperClassName();
+    while (superClassName != null) {
+      ClassInfo superClassInfo = symbolTable.getClassInfo(superClassName);
+      type = superClassInfo.getFieldType(identifierName);
+
+      if (type != null) {
+        return type;
+      }
+
+      superClassName = superClassInfo.getSuperClassName();
     }
 
     System.err.println("Identifier " + identifierName + " not found in method " + methodInfo.getMethodName()

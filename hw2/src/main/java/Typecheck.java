@@ -22,6 +22,11 @@ public class Typecheck {
         OutputMessage.outputErrorAndExit();
       }
 
+      if (symbolTable.containsOverload()) {
+        System.err.println("Symbol table contains an overload.");
+        OutputMessage.outputErrorAndExit();
+      }
+
       TypecheckVisitor typecheckVisitor = new TypecheckVisitor();
       TypecheckContext typecheckContext = new TypecheckContext(symbolTable, null, null);
       root.accept(typecheckVisitor, typecheckContext);
