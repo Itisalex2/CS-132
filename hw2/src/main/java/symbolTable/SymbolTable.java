@@ -115,6 +115,48 @@ public class SymbolTable {
     return false;
   }
 
+  public boolean allTypesExist() {
+    for (ClassInfo classInfo : symbolTable.values()) {
+      for (MJType fieldType : classInfo.getFields().values()) {
+        if (fieldType instanceof ClassType) {
+          String name = ((ClassType) fieldType).getName();
+          if (!symbolTable.containsKey(name)) {
+            return false;
+          }
+        }
+      }
+      for (MethodInfo method : classInfo.getMethods().values()) {
+        MJType returnType = method.getReturnType();
+        if (returnType instanceof ClassType) {
+          String name = ((ClassType) returnType).getName();
+          if (!symbolTable.containsKey(name)) {
+            return false;
+          }
+        }
+
+        for (MJType paramType : method.getParameterTypes()) {
+          if (paramType instanceof ClassType) {
+            String name = ((ClassType) paramType).getName();
+            if (!symbolTable.containsKey(name)) {
+              return false;
+            }
+          }
+        }
+
+        for (MJType localType : method.getLocalVariables().values()) {
+          if (localType instanceof ClassType) {
+            String name = ((ClassType) localType).getName();
+            if (!symbolTable.containsKey(name)) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

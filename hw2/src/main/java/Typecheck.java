@@ -27,6 +27,11 @@ public class Typecheck {
         OutputMessage.outputErrorAndExit();
       }
 
+      if (!symbolTable.allTypesExist()) {
+        System.err.println("Symbol table contains an undefined class.");
+        OutputMessage.outputErrorAndExit();
+      }
+
       TypecheckVisitor typecheckVisitor = new TypecheckVisitor();
       TypecheckContext typecheckContext = new TypecheckContext(symbolTable, null, null);
       root.accept(typecheckVisitor, typecheckContext);

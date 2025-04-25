@@ -366,8 +366,25 @@ public class TypecheckVisitor extends GJDepthFirst<MJType, TypecheckContext> {
       throw new AssertionError("Unreachable");
     }
 
-    ClassInfo objectClassInfo = symbolTable.getClassInfo(((ClassType) objectType).getName());
-    MethodInfo objectMethodInfo = objectClassInfo.getMethodInfo(methodName);
+    String objectClassName = ((ClassType) objectType).getName();
+    MethodInfo objectMethodInfo = null;
+
+    while (objectClassName != null) {
+      ClassInfo objectClassInfo = symbolTable.getClassInfo(objectClassName);
+
+      if (objectClassInfo.containsMethod(methodName)) {
+        objectMethodInfo = objectClassInfo.getMethodInfo(methodName);
+        break;
+      }
+
+      objectClassName = objectClassInfo.getSuperClassName();
+    }
+
+    if (objectMethodInfo == null) {
+      System.err.println("Method " + methodName + " not found in class " + objectType);
+      OutputMessage.outputErrorAndExit();
+      throw new AssertionError("Unreachable");
+    }
 
     MJType returnType = objectMethodInfo.getReturnType();
     List<MJType> parameterTypes = objectMethodInfo.getParameterTypes();
