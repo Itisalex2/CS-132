@@ -32,8 +32,16 @@ public class MethodInfo {
     return parameters;
   }
 
+  public List<String> getParameterNames() {
+    return new ArrayList<>(parameters.keySet());
+  }
+
   public List<MJType> getParameterTypes() {
     return new ArrayList<>(parameters.values());
+  }
+
+  public Boolean hasParameter(String paramName) {
+    return parameters.containsKey(paramName);
   }
 
   public MJType getParameterType(String paramName) {
@@ -53,6 +61,10 @@ public class MethodInfo {
 
   public Map<String, MJType> getLocalVariables() {
     return localVariables;
+  }
+
+  public Boolean hasLocalVariable(String varName) {
+    return localVariables.containsKey(varName);
   }
 
   public MJType getLocalVariableType(String varName) {

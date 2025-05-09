@@ -65,6 +65,10 @@ public class ClassInfo {
     return fields;
   }
 
+  public int getFieldCount() {
+    return fields.size();
+  }
+
   public MJType getFieldType(String fieldName) {
     if (fields.containsKey(fieldName)) {
       return fields.get(fieldName);
@@ -119,6 +123,14 @@ public class ClassInfo {
 
   public boolean containsMethod(String methodName) {
     return methods.containsKey(methodName);
+  }
+
+  public int getVtableSize() {
+    return vtableMethods.size();
+  }
+
+  public List<String> getVtableMethods() {
+    return vtableMethods;
   }
 
   @Override

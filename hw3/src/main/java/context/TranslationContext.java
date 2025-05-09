@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import IR.token.Identifier;
+import IR.token.Label;
 import symbolTable.ClassInfo;
 import symbolTable.MethodInfo;
 import symbolTable.SymbolTable;
+import type.MJType;
 
 public class TranslationContext {
   private final SymbolTable symbolTable;
@@ -14,6 +16,7 @@ public class TranslationContext {
   private final MethodInfo currentMethodInfo;
   private final Map<String, Identifier> localVarMap = new HashMap<>();
   private int variableCounter = 0;
+  private static int labelCounter = 0;
 
   public TranslationContext(SymbolTable symbolTable, ClassInfo classInfo, MethodInfo methodInfo) {
     this.symbolTable = symbolTable;
@@ -31,6 +34,10 @@ public class TranslationContext {
 
   public MethodInfo getCurrentMethodInfo() {
     return currentMethodInfo;
+  }
+
+  public static Label getNextUniqueLabel(String base) {
+    return new Label(base + "_" + (labelCounter++));
   }
 
   public Identifier getNextVariable() {
@@ -53,6 +60,20 @@ public class TranslationContext {
       throw new IllegalStateException("Variable '" + name + "' not found in current method context.");
     }
     return id;
+  }
+
+  public MJType getVarType(String name) {
+    MethodInfo method = currentMethodInfo;
+    if (method != null && method.hasLocalVariable(name)) {
+      return method.getLocalVariableType(name);
+    }
+    if (method != null && method.hasParameter(name)) {
+      return method.getParameterType(name);
+    }
+    if (currentClassInfo.containsField(name)) {
+      return currentClassInfo.getFieldType(name);
+    }
+    throw new RuntimeException("No type found for variable: " + name);
   }
 
   public boolean hasVar(String name) {
