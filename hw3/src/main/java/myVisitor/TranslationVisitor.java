@@ -3,6 +3,7 @@ package myVisitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import IR.token.FunctionName;
 import IR.token.Identifier;
@@ -163,7 +164,20 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
 
   @Override
   public TranslationResult visit(ClassExtendsDeclaration n, TranslationContext context) {
-    throw new UnsupportedOperationException("ClassExtendsDeclaration not supported in TranslationVisitor");
+    SymbolTable symbolTable = context.getSymbolTable();
+    String className = n.f1.f0.toString();
+    NodeListOptional methodDeclarations = n.f6;
+
+    ClassInfo classInfo = symbolTable.getClassInfo(className);
+    TranslationContext newContext = new TranslationContext(symbolTable, classInfo, null);
+
+    List<FunctionDecl> functions = new ArrayList<>();
+    for (Node methodDeclNode : methodDeclarations.nodes) {
+      TranslationResult methodTR = methodDeclNode.accept(this, newContext);
+      functions.addAll(methodTR.getFunctions());
+    }
+
+    return TranslationResult.ofFunctions(functions);
   }
 
   /**
@@ -726,7 +740,7 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
     List<Instruction> instructions = new ArrayList<>();
 
     int fieldSize = classInfo.getFieldCount();
-    int vmtSize = classInfo.getVtableSize();
+    int vmtSize = classInfo.getMethods().size();
 
     Identifier fieldsMemorySize = context.getNextVariable();
     Identifier fieldsTablePtr = context.getNextVariable();
@@ -738,7 +752,7 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
     instructions.add(new Move_Id_Integer(vmtMemorySize, (vmtSize) * 4));
     instructions.add(new Alloc(vmtPtr, vmtMemorySize));
 
-    List<String> methodNames = classInfo.getVtableMethods();
+    List<String> methodNames = classInfo.getMethods().keySet().stream().collect(Collectors.toList());
     for (String methodName : methodNames) {
       int methodOffset = classInfo.getMethodOffset(methodName);
       Identifier functionPtr = context.getNextVariable();

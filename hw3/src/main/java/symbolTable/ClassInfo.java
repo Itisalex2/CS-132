@@ -12,9 +12,10 @@ public class ClassInfo {
   private final String className;
   private String superClassName = null;
   private final Map<String, MJType> fields = new HashMap<>();
+  private final List<String> declaredFields = new ArrayList<>();
   private final Map<String, Integer> fieldOffsets = new HashMap<>();
   private final Map<String, MethodInfo> methods = new HashMap<>();
-  private final List<String> vtableMethods = new ArrayList<>();
+  private final List<String> declaredMethods = new ArrayList<>();
   private final Map<String, Integer> vtableOffsets = new HashMap<>();
 
   public ClassInfo(String className) {
@@ -30,7 +31,7 @@ public class ClassInfo {
     }
 
     fields.put(fieldName, fieldType);
-    fieldOffsets.put(fieldName, fieldOffsets.size() * 4);
+    declaredFields.add(fieldName);
   }
 
   public void addMethod(String methodName, MethodInfo methodInfo) {
@@ -39,8 +40,15 @@ public class ClassInfo {
     }
 
     methods.put(methodName, methodInfo);
-    vtableMethods.add(methodName);
-    vtableOffsets.put(methodName, vtableOffsets.size() * 4);
+    declaredMethods.add(methodName);
+  }
+
+  public List<String> getDeclaredFields() {
+    return declaredFields;
+  }
+
+  public List<String> getDeclaredMethods() {
+    return declaredMethods;
   }
 
   public String getClassName() {
@@ -48,17 +56,15 @@ public class ClassInfo {
   }
 
   public String getSuperClassName() {
-    throw new UnsupportedOperationException("Inheritance not supported yet");
-    // return superClassName;
+    return superClassName;
   }
 
   public void setSuperClassName(String superClassName) {
-    throw new UnsupportedOperationException("Inheritance not supported yet");
-    // if (this.superClassName != null) {
-    // OutputMessage.outputErrorAndExit();
-    // }
-    //
-    // this.superClassName = superClassName;
+    if (this.superClassName != null) {
+      OutputMessage.outputErrorAndExit();
+    }
+
+    this.superClassName = superClassName;
   }
 
   public Map<String, MJType> getFields() {
@@ -125,12 +131,12 @@ public class ClassInfo {
     return methods.containsKey(methodName);
   }
 
-  public int getVtableSize() {
-    return vtableMethods.size();
+  public Map<String, Integer> getFieldOffsets() {
+    return fieldOffsets;
   }
 
-  public List<String> getVtableMethods() {
-    return vtableMethods;
+  public Map<String, Integer> getVtableOffsets() {
+    return vtableOffsets;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package symbolTable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -153,6 +154,83 @@ public class SymbolTable {
     }
 
     return true;
+  }
+
+  public void resolveInheritance() {
+    List<ClassInfo> topoOrder = new ArrayList<>();
+    Set<String> visited = new HashSet<>();
+
+    for (String className : symbolTable.keySet()) {
+      dfsTopo(className, visited, topoOrder);
+    }
+
+    for (ClassInfo cls : topoOrder) {
+      String parentName = cls.getSuperClassName();
+
+      if (parentName == null) {
+        int fieldOffset = 4;
+        for (String f : cls.getDeclaredFields()) {
+          cls.getFieldOffsets().put(f, fieldOffset);
+          fieldOffset += 4;
+        }
+
+        int methodOffset = 0;
+        for (String m : cls.getDeclaredMethods()) {
+          cls.getVtableOffsets().put(m, methodOffset);
+          methodOffset += 4;
+        }
+        continue;
+      }
+
+      ClassInfo parent = getClassInfo(parentName);
+
+      cls.getFieldOffsets().putAll(parent.getFieldOffsets());
+      cls.getFields().putAll(parent.getFields());
+      cls.getVtableOffsets().putAll(parent.getVtableOffsets());
+
+      int nextFieldOffset = cls.getFieldOffsets()
+          .values()
+          .stream()
+          .max(Integer::compare)
+          .orElse(0) + 4;
+
+      for (String f : cls.getDeclaredFields()) {
+        /*
+         * Always allocate a new slot – even if the name shadows
+         * a parent field.
+         */
+        cls.getFieldOffsets().put(f, nextFieldOffset);
+        nextFieldOffset += 4;
+      }
+
+      int nextMethodOffset = cls.getVtableOffsets()
+          .values()
+          .stream()
+          .max(Integer::compare)
+          .orElse(-4) + 4;
+
+      for (String m : cls.getDeclaredMethods()) {
+        if (cls.getVtableOffsets().containsKey(m)) {
+          continue;
+        }
+        cls.getVtableOffsets().put(m, nextMethodOffset);
+        nextMethodOffset += 4;
+      }
+    }
+  }
+
+  private void dfsTopo(String className, Set<String> visited, List<ClassInfo> topoOrder) {
+    if (visited.contains(className))
+      return;
+    visited.add(className);
+
+    ClassInfo classInfo = getClassInfo(className);
+    String parent = classInfo.getSuperClassName();
+    if (parent != null) {
+      dfsTopo(parent, visited, topoOrder);
+    }
+
+    topoOrder.add(classInfo);
   }
 
   @Override

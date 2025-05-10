@@ -15,6 +15,7 @@ public class J2S {
       root.accept(symbolTableBuilderVisitor, null);
 
       SymbolTable symbolTable = symbolTableBuilderVisitor.getSymbolTable();
+      symbolTable.resolveInheritance();
       System.err.println(symbolTable);
 
       TranslationVisitor translationVisitor = new TranslationVisitor();
