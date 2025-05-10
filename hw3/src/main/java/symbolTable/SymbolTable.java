@@ -186,8 +186,6 @@ public class SymbolTable {
 
       cls.getFieldOffsets().putAll(parent.getFieldOffsets());
       cls.getVtableOffsets().putAll(parent.getVtableOffsets());
-      cls.getMethods().putAll(parent.getMethods());
-
       for (Map.Entry<String, MJType> e : parent.getFields().entrySet()) {
         cls.getFields().putIfAbsent(e.getKey(), e.getValue());
       }

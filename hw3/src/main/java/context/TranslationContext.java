@@ -15,6 +15,7 @@ public class TranslationContext {
   private final ClassInfo currentClassInfo;
   private final MethodInfo currentMethodInfo;
   private final Map<String, Identifier> localVarMap = new HashMap<>();
+  private final Map<String, MJType> localTypeMap = new HashMap<>();
   private int variableCounter = 0;
   private static int labelCounter = 0;
 
@@ -49,8 +50,16 @@ public class TranslationContext {
    * Gets the next variable by default
    */
   public Identifier addLocalVar(String name) {
+    return addLocalVar(name, null);
+  }
+
+  /**
+   * Gets the next variable by default
+   */
+  public Identifier addLocalVar(String name, MJType type) {
     Identifier id = getNextVariable();
     localVarMap.put(name, id);
+    localTypeMap.put(name, type);
     return id;
   }
 
@@ -63,7 +72,12 @@ public class TranslationContext {
   }
 
   public MJType getVarType(String name) {
+    MJType t = localTypeMap.get(name); // check translator’s own map first
+    if (t != null)
+      return t;
+
     MethodInfo method = currentMethodInfo;
+
     if (method != null && method.hasLocalVariable(name)) {
       return method.getLocalVariableType(name);
     }

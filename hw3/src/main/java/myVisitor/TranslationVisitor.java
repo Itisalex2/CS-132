@@ -3,7 +3,6 @@ package myVisitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import IR.token.FunctionName;
 import IR.token.Identifier;
@@ -186,9 +185,9 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
   @Override
   public TranslationResult visit(VarDeclaration n, TranslationContext context) {
     String name = n.f1.f0.toString();
-
     if (context.getCurrentMethodInfo() != null) {
-      context.addLocalVar(name);
+      MJType type = context.getCurrentMethodInfo().getLocalVariableType(name);
+      context.addLocalVar(name, type);
     } // Class fields are put into the heap during symbol table construction
 
     return null;
@@ -241,7 +240,8 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
   @Override
   public TranslationResult visit(FormalParameter n, TranslationContext context) {
     String name = n.f1.f0.toString();
-    context.addLocalVar(name);
+    MJType type = context.getCurrentMethodInfo().getParameterType(name);
+    context.addLocalVar(name, type);
 
     return null;
   }
@@ -622,6 +622,16 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
 
     MethodInfo calledMethod = methodOwner.getMethodInfo(methodName);
     int methodOffset = dynamicClass.getMethodOffset(methodName);
+
+    Label okLbl = TranslationContext.getNextUniqueLabel("objNotNull");
+    Label nullLbl = TranslationContext.getNextUniqueLabel("objNull");
+
+    instructions.add(new IfGoto(objectId, nullLbl));
+    instructions.add(new Goto(okLbl));
+    instructions.add(new LabelInstr(nullLbl));
+    instructions.add(new ErrorMessage(constant.ErrorMessage.nullPointer));
+    instructions.add(new LabelInstr(okLbl));
+
     Identifier vmtPtr = context.getNextVariable();
     instructions.add(new Load(vmtPtr, objectId, 0));
 
