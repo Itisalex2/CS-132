@@ -185,8 +185,17 @@ public class SymbolTable {
       ClassInfo parent = getClassInfo(parentName);
 
       cls.getFieldOffsets().putAll(parent.getFieldOffsets());
-      cls.getFields().putAll(parent.getFields());
       cls.getVtableOffsets().putAll(parent.getVtableOffsets());
+      cls.getMethods().putAll(parent.getMethods());
+
+      for (Map.Entry<String, MJType> e : parent.getFields().entrySet()) {
+        cls.getFields().putIfAbsent(e.getKey(), e.getValue());
+      }
+
+      for (Map.Entry<String, MethodInfo> e : parent.getMethods().entrySet()) {
+        /* keep the child’s MethodInfo if it already defines/overrides this name */
+        cls.getMethods().putIfAbsent(e.getKey(), e.getValue());
+      }
 
       int nextFieldOffset = cls.getFieldOffsets()
           .values()

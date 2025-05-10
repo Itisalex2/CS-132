@@ -30,8 +30,8 @@ public class ClassInfo {
       OutputMessage.outputErrorAndExit();
     }
 
-    fields.put(fieldName, fieldType);
     declaredFields.add(fieldName);
+    fields.put(fieldName, fieldType);
   }
 
   public void addMethod(String methodName, MethodInfo methodInfo) {
@@ -137,6 +137,11 @@ public class ClassInfo {
 
   public Map<String, Integer> getVtableOffsets() {
     return vtableOffsets;
+  }
+
+  public int getFieldOffsetMaxBytes() {
+    return fieldOffsets.values().stream().max(Integer::compare)
+        .orElse(0) + 4;
   }
 
   @Override

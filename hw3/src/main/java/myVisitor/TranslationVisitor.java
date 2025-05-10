@@ -582,7 +582,6 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
     String methodName = n.f2.f0.toString();
     NodeOptional arguments = n.f4;
     SymbolTable symbolTable = context.getSymbolTable();
-    MethodInfo methodInfo = context.getCurrentMethodInfo();
 
     SparrowResult objectSR = object.accept(this, context).getSparrowResult();
     Identifier objectId = objectSR.getResult();
@@ -613,9 +612,16 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
     args.addAll(argIds);
 
     ClassType objType = (ClassType) objectSR.getType();
-    ClassInfo classInfo = symbolTable.getClassInfo(objType.getName());
-    int methodOffset = classInfo.getMethodOffset(methodName);
+    ClassInfo dynamicClass = symbolTable.getClassInfo(objType.getName());
 
+    ClassInfo methodOwner = dynamicClass;
+    while (methodOwner != null && !methodOwner.getDeclaredMethods().contains(methodName)) {
+      String parentName = methodOwner.getSuperClassName();
+      methodOwner = parentName != null ? symbolTable.getClassInfo(parentName) : null;
+    }
+
+    MethodInfo calledMethod = methodOwner.getMethodInfo(methodName);
+    int methodOffset = dynamicClass.getMethodOffset(methodName);
     Identifier vmtPtr = context.getNextVariable();
     instructions.add(new Load(vmtPtr, objectId, 0));
 
@@ -625,7 +631,6 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
     Identifier result = context.getNextVariable();
     instructions.add(new Call(result, methodPtr, args));
 
-    MethodInfo calledMethod = classInfo.getMethodInfo(methodName);
     MJType returnType = calledMethod.getReturnType();
 
     return TranslationResult.ofSparrowResult(new SparrowResult(instructions, result).withType(returnType));
@@ -739,25 +744,32 @@ public class TranslationVisitor extends GJDepthFirst<TranslationResult, Translat
 
     List<Instruction> instructions = new ArrayList<>();
 
-    int fieldSize = classInfo.getFieldCount();
-    int vmtSize = classInfo.getMethods().size();
+    int fieldSize = classInfo.getFieldOffsetMaxBytes();
+    int vmtSize = classInfo.getVtableOffsets().size();
 
     Identifier fieldsMemorySize = context.getNextVariable();
     Identifier fieldsTablePtr = context.getNextVariable();
     Identifier vmtMemorySize = context.getNextVariable();
     Identifier vmtPtr = context.getNextVariable();
 
-    instructions.add(new Move_Id_Integer(fieldsMemorySize, (fieldSize) * 4));
+    instructions.add(new Move_Id_Integer(fieldsMemorySize, (fieldSize)));
     instructions.add(new Alloc(fieldsTablePtr, fieldsMemorySize));
     instructions.add(new Move_Id_Integer(vmtMemorySize, (vmtSize) * 4));
     instructions.add(new Alloc(vmtPtr, vmtMemorySize));
 
-    List<String> methodNames = classInfo.getMethods().keySet().stream().collect(Collectors.toList());
+    List<String> methodNames = new ArrayList<>(classInfo.getVtableOffsets().keySet());
     for (String methodName : methodNames) {
       int methodOffset = classInfo.getMethodOffset(methodName);
+      ClassInfo owner = classInfo;
+      while (owner != null && !owner.getDeclaredMethods().contains(methodName)) {
+        String parentName = owner.getSuperClassName();
+        owner = (parentName != null) ? symbolTable.getClassInfo(parentName) : null;
+      }
+
+      MethodInfo methodInfo = owner.getMethodInfo(methodName);
       Identifier functionPtr = context.getNextVariable();
-      MethodInfo methodInfo = classInfo.getMethodInfo(methodName);
-      instructions.add(new Move_Id_FuncName(functionPtr, getFunctionName(classInfo, methodInfo)));
+
+      instructions.add(new Move_Id_FuncName(functionPtr, getFunctionName(owner, methodInfo)));
       instructions.add(new Store(vmtPtr, methodOffset, functionPtr));
     }
 
