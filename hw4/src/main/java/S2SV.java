@@ -2,6 +2,7 @@ import java.io.InputStream;
 
 import IR.SparrowParser;
 import IR.visitor.SparrowConstructor;
+import algorithm.LinearScanRegisterAllocator;
 import model.FastLivelinessModel;
 import visitor.FastLivelinessVisitor;
 import IR.syntaxtree.Node;
@@ -21,5 +22,9 @@ public class S2SV {
 
     FastLivelinessModel fastLivelinessModel = fastLivelinessVisitor.getFastLivelinessModel();
     System.err.println(fastLivelinessModel.toString());
+
+    LinearScanRegisterAllocator linearScanRegisterAllocator = new LinearScanRegisterAllocator(fastLivelinessModel, 3);
+    linearScanRegisterAllocator.computeRegisterAllocationTable();
+    System.err.println(linearScanRegisterAllocator);
   }
 }
