@@ -28,6 +28,14 @@ public class LinearScanRegisterAllocator {
     this.fastLivelinessModel = fastLivelinessModel;
   }
 
+  public Map<String, Map<String, String>> getRegisterAllocationTable() {
+    return registerAllocationTable;
+  }
+
+  public Map<String, Set<String>> getSpillTable() {
+    return spillTable;
+  }
+
   public void computeRegisterAllocationTable() {
     for (String funcName : fastLivelinessModel.getDefMap().keySet()) {
       computeRegisterAllocationTableForFunction(funcName);

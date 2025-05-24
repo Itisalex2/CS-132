@@ -5,6 +5,7 @@ import IR.visitor.SparrowConstructor;
 import algorithm.LinearScanRegisterAllocator;
 import model.FastLivelinessModel;
 import visitor.FastLivelinessVisitor;
+import visitor.TranslationVisitor;
 import IR.syntaxtree.Node;
 
 public class S2SV {
@@ -26,5 +27,9 @@ public class S2SV {
     LinearScanRegisterAllocator linearScanRegisterAllocator = new LinearScanRegisterAllocator(fastLivelinessModel, 3);
     linearScanRegisterAllocator.computeRegisterAllocationTable();
     System.err.println(linearScanRegisterAllocator);
+
+    TranslationVisitor translationVisitor = new TranslationVisitor(linearScanRegisterAllocator);
+    translationVisitor.visit(program, null);
+    System.out.println(translationVisitor.getProgram().toString());
   }
 }
