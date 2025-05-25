@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import IR.token.Register;
 import model.FastLivelinessModel;
 import model.LiveInterval;
 
@@ -127,20 +128,22 @@ public class LinearScanRegisterAllocator {
   private void initializeRegisterPool() {
     availableRegisters = new LinkedList<>();
 
-    // // a2 - a7
-    // for (int i = 2; i <= 7 && availableRegisters.size() < maxRegisters; i++) {
-    // availableRegisters.add("a" + i);
-    // }
-    //
-    // s1 - s11
-    // for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
-    // availableRegisters.add("s" + i);
-    // }
-
     // t2 - t5, t0 & t1 are reserved as temporary registers
     for (int i = 2; i <= 5 && availableRegisters.size() < maxRegisters; i++) {
       availableRegisters.add("t" + i);
     }
+
+    // s1 - s11
+    for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
+      availableRegisters.add("s" + i);
+    }
+
+    // a2 - a7
+    // for (int i = 2; i <= 7 && availableRegisters.size() < maxRegisters; i++) {
+    // availableRegisters.add("a" + i);
+    // }
+    //
+
   }
 
   public boolean isSpilled(String funcName, String var) {
@@ -149,6 +152,44 @@ public class LinearScanRegisterAllocator {
 
   public String getRegister(String funcName, String var) {
     return registerAllocationTable.get(funcName).get(var);
+  }
+
+  public boolean registerAllocated(String funcName, Register reg) {
+    return registerAllocationTable.containsKey(funcName)
+        && registerAllocationTable.get(funcName).containsValue(reg.toString());
+  }
+
+  public String getVarStoredInReg(String func, Register r) {
+    Map<String, String> map = registerAllocationTable.get(func);
+    if (map == null)
+      return null;
+    for (Map.Entry<String, String> entry : map.entrySet())
+      if (r.toString().equals(entry.getValue()))
+        return entry.getKey();
+    return null;
+  }
+
+  public boolean isCallerRegLiveAcrossCall(String func,
+      Register r,
+      int callLine) {
+
+    Map<String, String> map = registerAllocationTable.get(func);
+    if (map == null)
+      return false;
+
+    for (Map.Entry<String, String> e : map.entrySet()) {
+      if (!e.getValue().equals(r.toString()))
+        continue;
+
+      String var = e.getKey();
+      int lastUse = fastLivelinessModel.getUseMapForFunc(func).getOrDefault(var, -1);
+      int firstDef = fastLivelinessModel.getDefMapForFunc(func).getOrDefault(var, 0);
+
+      if (firstDef <= callLine && callLine < lastUse) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

@@ -40,6 +40,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
 
   Register t0 = new Register("t0"); // Temp registers
   Register t1 = new Register("t1");
+  int currentLine = 0;
 
   List<Register> callerSavedRegisters = new ArrayList<>(
       Arrays.asList(new Register("t2"), new Register("t3"), new Register("t4"), new Register("t5")));
@@ -50,8 +51,6 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
   List<Register> argRegisters = new ArrayList<>(
       Arrays.asList(new Register("a2"), new Register("a3"), new Register("a4"), new Register("a5"), new Register("a6"),
           new Register("a7")));
-
-  int stackCounter = 0; // Counter for generating unique stack identifiers
 
   public TranslationVisitor(LinearScanRegisterAllocator allocator) {
     this.allocator = allocator;
@@ -83,6 +82,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
    * Block block;
    */
   public TranslationResult visit(sparrow.FunctionDecl n, String arg) {
+    currentLine = 1;
     FunctionName functionName = n.functionName;
     List<Identifier> formalParameters = n.formalParameters;
     sparrow.Block block = n.block;
@@ -104,11 +104,13 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     Identifier returnId = n.return_id;
 
     List<Instruction> translatedInstructions = new ArrayList<>();
-    // for (Register calleeSavedRegister : calleeSavedRegisters) {
-    // Identifier calleeSavedId = genStackIdentifier(calleeSavedRegister);
-    // translatedInstructions.add(new Move_Id_Reg(calleeSavedId,
-    // calleeSavedRegister));
-    // }
+    for (Register calleeSavedRegister : calleeSavedRegisters) {
+      if (allocator.registerAllocated(functionName, calleeSavedRegister)) {
+        Identifier calleeSavedId = genStackIdentifier(calleeSavedRegister);
+        translatedInstructions.add(new Move_Id_Reg(calleeSavedId,
+            calleeSavedRegister));
+      }
+    }
 
     for (Identifier p : n.parent.formalParameters) {
       String r = allocator.getRegister(functionName, p.toString());
@@ -118,17 +120,21 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     }
 
     for (sparrow.Instruction instruction : instructions) {
-      translatedInstructions.addAll(instruction.accept(this, functionName).getInstructions());
+      List<Instruction> instrs = instruction.accept(this, functionName).getInstructions();
+      translatedInstructions.addAll(instrs);
+      currentLine++;
     }
 
     translatedInstructions.add(loadFrom(functionName, returnId, t0));
     translatedInstructions.add(new Move_Id_Reg(returnId, t0));
 
-    // for (Register calleeSavedRegister : calleeSavedRegisters) {
-    // Identifier calleeSavedId = genStackIdentifier(calleeSavedRegister);
-    // translatedInstructions.add(new Move_Reg_Id(calleeSavedRegister,
-    // calleeSavedId));
-    // }
+    for (Register calleeSavedRegister : calleeSavedRegisters) {
+      if (allocator.registerAllocated(functionName, calleeSavedRegister)) {
+        Identifier calleeSavedId = genStackIdentifier(calleeSavedRegister);
+        translatedInstructions.add(new Move_Reg_Id(calleeSavedRegister,
+            calleeSavedId));
+      }
+    }
     Block translatedBlock = new Block(translatedInstructions, returnId);
     return TranslationResult.ofBlock(translatedBlock);
   }
@@ -372,8 +378,10 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
 
     List<Instruction> instructions = new ArrayList<>();
     for (Register callerSavedRegister : callerSavedRegisters) {
-      Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
-      instructions.add(new Move_Id_Reg(callerSavedId, callerSavedRegister));
+      if (allocator.isCallerRegLiveAcrossCall(funcName, callerSavedRegister, currentLine)) {
+        Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
+        instructions.add(new Move_Id_Reg(callerSavedId, callerSavedRegister));
+      }
     }
 
     // for (Register argRegister : argRegisters) {
@@ -389,8 +397,10 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     instructions.add(new Call(t0, t0, args));
 
     for (Register callerSavedRegister : callerSavedRegisters) {
-      Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
-      instructions.add(new Move_Reg_Id(callerSavedRegister, callerSavedId));
+      if (allocator.isCallerRegLiveAcrossCall(funcName, callerSavedRegister, currentLine)) {
+        Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
+        instructions.add(new Move_Reg_Id(callerSavedRegister, callerSavedId));
+      }
     }
 
     // for (Register argRegister : argRegisters) {
