@@ -51,7 +51,7 @@ public class FastLivelinessVisitor implements ArgVisitor<String> {
     labelMap.clear();
 
     for (Identifier fp : n.formalParameters) {
-      model.putDef(funcName, fp.toString(), -1);
+      model.putDef(funcName, fp.toString(), 0);
       model.putUse(funcName, fp.toString(), -1);
     }
 

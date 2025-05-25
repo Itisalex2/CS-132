@@ -1,0 +1,9 @@
+func Main()
+     v0 = @f
+     a = 0
+     v1 = call v0(a a)
+     return v1
+
+func f(x b)
+     d = x + b
+     return d

@@ -19,7 +19,12 @@ public class FastLivelinessModel {
   }
 
   public void putUse(String funcName, String var, int line) {
+    Map<String, Integer> funcDefMap = defMap.computeIfAbsent(funcName, k -> new HashMap<>());
     Map<String, Integer> funcUseMap = useMap.computeIfAbsent(funcName, k -> new HashMap<>());
+    if (!funcDefMap.containsKey(var)) {
+      // If the variable is not defined in this function, we don't track its use
+      return;
+    }
     if (!funcUseMap.containsKey(var) || !(line == -1)) { // Once it has a proper use line (≥ 0), don’t overwrite it
       funcUseMap.put(var, line);
     }

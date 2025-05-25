@@ -50,7 +50,15 @@ public class LinearScanRegisterAllocator {
     Map<String, Integer> useMap = fastLivelinessModel.getUseMapForFunc(funcName);
 
     List<LiveInterval> intervals = defMap.entrySet().stream()
-        .map(entry -> new LiveInterval(entry.getKey(), entry.getValue(), useMap.get(entry.getKey())))
+        // keep only variables that have a *real* use (>= 0)
+        .filter(e -> {
+          Integer useLine = useMap.get(e.getKey());
+          return useLine != null && useLine >= 0;
+        })
+        .map(e -> new LiveInterval(
+            e.getKey(), // var
+            e.getValue(), // start = def line
+            useMap.get(e.getKey()))) // end = first use line
         .sorted(Comparator.comparingInt(i -> i.start))
         .collect(Collectors.toList());
 
@@ -64,9 +72,13 @@ public class LinearScanRegisterAllocator {
         spillAtInterval(interval, funcName);
       } else {
         String freeRegister = availableRegisters.poll();
-        registerAllocationTable.get(funcName).put(interval.var, freeRegister);
-        activeIntervals.add(interval);
-        Collections.sort(activeIntervals, Comparator.comparingInt(i -> i.end));
+        if (freeRegister == null) {
+          spillTable.get(funcName).add(interval.var);
+        } else {
+          registerAllocationTable.get(funcName).put(interval.var, freeRegister);
+          activeIntervals.add(interval);
+          Collections.sort(activeIntervals, Comparator.comparingInt(i -> i.end));
+        }
       }
     }
   }
@@ -93,6 +105,10 @@ public class LinearScanRegisterAllocator {
    */
   private void spillAtInterval(LiveInterval interval, String funcName) {
     String intervalVar = interval.var;
+    if (activeIntervals.isEmpty()) {
+      spillTable.get(funcName).add(intervalVar);
+      return;
+    }
     LiveInterval lastActiveInterval = activeIntervals.get(activeIntervals.size() - 1);
     if (lastActiveInterval.end > interval.end) {
       String spilledVar = lastActiveInterval.var;
@@ -111,16 +127,16 @@ public class LinearScanRegisterAllocator {
   private void initializeRegisterPool() {
     availableRegisters = new LinkedList<>();
 
-    // a2 - a7
-    for (int i = 2; i <= 7 && availableRegisters.size() < maxRegisters; i++) {
-      availableRegisters.add("a" + i);
-    }
-
+    // // a2 - a7
+    // for (int i = 2; i <= 7 && availableRegisters.size() < maxRegisters; i++) {
+    // availableRegisters.add("a" + i);
+    // }
+    //
     // s1 - s11
-    for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
-      availableRegisters.add("s" + i);
-    }
-
+    // for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
+    // availableRegisters.add("s" + i);
+    // }
+    //
     // t2 - t5, t0 & t1 are reserved as temporary registers
     for (int i = 2; i <= 5 && availableRegisters.size() < maxRegisters; i++) {
       availableRegisters.add("t" + i);
