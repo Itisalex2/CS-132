@@ -371,16 +371,9 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     List<Identifier> args = n.args;
 
     List<Instruction> instructions = new ArrayList<>();
-    // for (Register callerSavedRegister : callerSavedRegisters) {
-    // Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
-    // instructions.add(new Move_Id_Reg(callerSavedId, callerSavedRegister));
-    // }
-
-    List<Identifier> saved = new ArrayList<>();
-    for (Register r : callerSavedRegisters) {
-      Identifier slot = new Identifier("stack_" + r + "_" + (++stackCounter));
-      instructions.add(new Move_Id_Reg(slot, r)); // save once
-      saved.add(slot); // remember that EXACT slot
+    for (Register callerSavedRegister : callerSavedRegisters) {
+      Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
+      instructions.add(new Move_Id_Reg(callerSavedId, callerSavedRegister));
     }
 
     // for (Register argRegister : argRegisters) {
@@ -395,14 +388,9 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     }
     instructions.add(new Call(t0, t0, args));
 
-    // for (Register callerSavedRegister : callerSavedRegisters) {
-    // Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
-    // instructions.add(new Move_Reg_Id(callerSavedRegister, callerSavedId));
-    // }
-
-    for (int i = 0; i < callerSavedRegisters.size(); i++) {
-      instructions.add(new Move_Reg_Id(callerSavedRegisters.get(i),
-          saved.get(i))); // restore
+    for (Register callerSavedRegister : callerSavedRegisters) {
+      Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
+      instructions.add(new Move_Reg_Id(callerSavedRegister, callerSavedId));
     }
 
     // for (Register argRegister : argRegisters) {
@@ -432,5 +420,10 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       Register srcReg = new Register(allocator.getRegister(funcName, srcId.toString()));
       return new Move_Reg_Reg(reg, srcReg);
     }
+  }
+
+  private Identifier genStackIdentifier(Register reg) {
+    String id = "stack_save_" + reg;
+    return new Identifier(id);
   }
 }

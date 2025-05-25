@@ -136,7 +136,7 @@ public class LinearScanRegisterAllocator {
     // for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
     // availableRegisters.add("s" + i);
     // }
-    //
+
     // t2 - t5, t0 & t1 are reserved as temporary registers
     for (int i = 2; i <= 5 && availableRegisters.size() < maxRegisters; i++) {
       availableRegisters.add("t" + i);
