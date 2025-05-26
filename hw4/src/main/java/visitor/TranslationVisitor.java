@@ -2,7 +2,12 @@ package visitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import IR.token.FunctionName;
 import IR.token.Identifier;
@@ -89,7 +94,10 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     sparrow.Block block = n.block;
 
     Block translatedBlock = block.accept(this, null).getBlock();
-    FunctionDecl translatedFunctionDecl = new FunctionDecl(functionName, formalParameters, translatedBlock);
+    List<Identifier> newFormalParameters = formalParameters.size() > 6
+        ? formalParameters.subList(6, formalParameters.size())
+        : new ArrayList<>();
+    FunctionDecl translatedFunctionDecl = new FunctionDecl(functionName, newFormalParameters, translatedBlock);
 
     return TranslationResult.ofFunctionDecl(translatedFunctionDecl);
   }
@@ -377,8 +385,8 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     Identifier lhs = n.lhs;
     Identifier callee = n.callee;
     List<Identifier> args = n.args;
-
     List<Instruction> instructions = new ArrayList<>();
+
     for (Register callerSavedRegister : callerSavedRegisters) {
       if (allocator.isCallerRegLiveAcrossCall(funcName, callerSavedRegister, currentLine)) {
         Identifier callerSavedId = genStackIdentifier(callerSavedRegister);
@@ -387,9 +395,39 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     }
 
     for (Register argRegister : argRegisters) {
-      Identifier argId = genStackIdentifier(argRegister);
-      instructions.add(new Move_Id_Reg(argId, argRegister));
+      if (allocator.isCallerRegLiveAcrossCall(funcName, argRegister, currentLine)) {
+        Identifier argId = genStackIdentifier(argRegister);
+        instructions.add(new Move_Id_Reg(argId, argRegister));
+      }
     }
+
+    // List<Move> moves = new ArrayList<>();
+
+    // for (int i = 0; i < args.size(); ++i) {
+    // Identifier arg = args.get(i);
+    //
+    // if (i < 6) { // a2 … a7
+    // Register dst = argRegisters.get(i);
+    //
+    // String rName = allocator.getRegister(funcName, arg.toString());
+    // boolean spilled = allocator.isSpilled(funcName, arg.toString()) || rName ==
+    // null;
+    //
+    // if (spilled) {
+    // // value is in memory → load directly into its dst register
+    // instructions.add(loadFrom(funcName, arg, dst));
+    // } else {
+    // Register src = new Register(rName);
+    // if (!src.equals(dst))
+    // moves.add(new Move(dst, src)); // schedule shuffle
+    // }
+    // } else { // args 7+ stay in stack slot
+    // instructions.add(loadFrom(funcName, arg, t1)); // t1 ← value
+    // instructions.add(new Move_Id_Reg(arg, t1)); // store for callee
+    // }
+    // }
+
+    // emitParallelCopy(moves, t1, instructions);
 
     instructions.add(loadFrom(funcName, callee, t0));
     for (int i = 0; i < args.size(); i++) {
@@ -397,7 +435,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       instructions.add(loadFrom(funcName, arg, t1)); // t1 ← value
 
       if (i < 6) {
-        // first six → a2…a7. Don't modify actual a2...a7, put them into the stack first
+        // first six → a2…a7. Don't modify actual a2...a7, put them into the stack
         instructions.add(new Move_Id_Reg(tmpSlot(argRegisters.get(i)), t1));
       } else {
         // rest stay in their identifier slot on the call frame
@@ -406,10 +444,14 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     }
     // Set up a2...a7 for new call
     for (int i = 0; i < Math.min(args.size(), argRegisters.size()); i++) {
-      instructions.add(new Move_Reg_Id(argRegisters.get(i), tmpSlot(argRegisters.get(i))));
+      instructions.add(new Move_Reg_Id(argRegisters.get(i),
+          tmpSlot(argRegisters.get(i))));
     }
 
-    instructions.add(new Call(t0, t0, args));
+    List<Identifier> newArgs = args.size() > 6
+        ? args.subList(6, args.size())
+        : new ArrayList<>();
+    instructions.add(new Call(t0, t0, newArgs));
     callCounter++;
 
     for (Register callerSavedRegister : callerSavedRegisters) {
@@ -420,8 +462,10 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     }
 
     for (Register argRegister : argRegisters) {
-      Identifier argId = genStackIdentifier(argRegister);
-      instructions.add(new Move_Reg_Id(argRegister, argId));
+      if (allocator.isCallerRegLiveAcrossCall(funcName, argRegister, currentLine)) {
+        Identifier argId = genStackIdentifier(argRegister);
+        instructions.add(new Move_Reg_Id(argRegister, argId));
+      }
     }
 
     instructions.add(storeTo(funcName, lhs, t0));
@@ -456,4 +500,59 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
   private Identifier tmpSlot(Register reg) {
     return new Identifier("_argtmp_" + (callCounter) + "_" + reg);
   }
+
+  // /* ───────── tiny record ───────── */
+  // private static final class Move {
+  // final Register dst, src;
+  //
+  // Move(Register dst, Register src) {
+  // this.dst = dst;
+  // this.src = src;
+  // }
+  // }
+  //
+  // /*
+  // * ───────────────────── Simple & correct shuffle ─────────────────────
+  // * 1. Emit every move whose src is not used as a dst.
+  // * 2. Take the FIRST remaining move, do 3-move swap with scratch,
+  // * then CONTINUE the loop – the swap turns the rest into acyclic moves.
+  // * Works for any permutation, uses 1 scratch, never rewrites/duplicates.
+  // */
+  // private void emitParallelCopy(List<Move> moves,
+  // Register scratch,
+  // List<Instruction> out) {
+  //
+  // /* remove no-ops once */
+  // moves.removeIf(m -> m.dst.equals(m.src));
+  //
+  // while (!moves.isEmpty()) {
+  //
+  // /* 1. emit all acyclic moves in one pass */
+  // Iterator<Move> it = moves.iterator();
+  // boolean emitted = false;
+  // while (it.hasNext()) {
+  // Move m = it.next();
+  // boolean srcIsDst = moves.stream()
+  // .anyMatch(o -> o.dst.equals(m.src));
+  // if (!srcIsDst) {
+  // out.add(new Move_Reg_Reg(m.dst, m.src)); // dst ← src
+  // it.remove();
+  // emitted = true;
+  // }
+  // }
+  // if (emitted)
+  // continue; // loop again, list is smaller
+  //
+  // /*
+  // * 2. list is now ONE OR MORE disjoint cycles.
+  // * Break ONE edge (the first) with a classic 3-move swap
+  // */
+  // Move m = moves.remove(0); // (dst ← src) we’ll perform
+  // // but we need dst’s old value
+  // out.add(new Move_Reg_Reg(scratch, m.dst)); // scratch ← dst
+  // out.add(new Move_Reg_Reg(m.dst, m.src)); // dst ← src
+  // out.add(new Move_Reg_Reg(m.src, scratch)); // src ← old dst
+  // // that completes the swap; go back to the while(!moves) loop
+  // }
+  // }
 }

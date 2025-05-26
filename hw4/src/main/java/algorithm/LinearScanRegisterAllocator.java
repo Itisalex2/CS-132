@@ -144,17 +144,14 @@ public class LinearScanRegisterAllocator {
     for (int i = 2; i <= 5 && availableRegisters.size() < maxRegisters; i++) {
       availableRegisters.add("t" + i);
     }
-
     // s1 - s11
     for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
       availableRegisters.add("s" + i);
     }
-
     // a2 - a7
     // for (int i = 2; i <= 7 && availableRegisters.size() < maxRegisters; i++) {
     // availableRegisters.add("a" + i);
     // }
-    //
 
   }
 
