@@ -41,6 +41,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
   Register t0 = new Register("t0"); // Temp registers
   Register t1 = new Register("t1");
   int currentLine = 0;
+  int callCounter = 0;
 
   List<Register> callerSavedRegisters = new ArrayList<>(
       Arrays.asList(new Register("t2"), new Register("t3"), new Register("t4"), new Register("t5")));
@@ -112,10 +113,11 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       }
     }
 
-    for (Identifier p : n.parent.formalParameters) {
-      String r = allocator.getRegister(functionName, p.toString());
-      if (r != null && !allocator.isSpilled(functionName, p.toString())) {
-        translatedInstructions.add(new Move_Reg_Id(new Register(r), p));
+    for (int i = 6; i < n.parent.formalParameters.size(); i++) {
+      Identifier param = n.parent.formalParameters.get(i);
+      String rName = allocator.getRegister(functionName, param.toString());
+      if (rName != null && !allocator.isSpilled(functionName, param.toString())) {
+        translatedInstructions.add(new Move_Reg_Id(new Register(rName), param)); // load once
       }
     }
 
@@ -384,17 +386,31 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       }
     }
 
-    // for (Register argRegister : argRegisters) {
-    // Identifier argId = genStackIdentifier(argRegister);
-    // instructions.add(new Move_Id_Reg(argId, argRegister));
-    // }
+    for (Register argRegister : argRegisters) {
+      Identifier argId = genStackIdentifier(argRegister);
+      instructions.add(new Move_Id_Reg(argId, argRegister));
+    }
 
     instructions.add(loadFrom(funcName, callee, t0));
-    for (Identifier arg : args) {
-      instructions.add(loadFrom(funcName, arg, t1));
-      instructions.add(new Move_Id_Reg(arg, t1));
+    for (int i = 0; i < args.size(); i++) {
+      Identifier arg = args.get(i);
+      instructions.add(loadFrom(funcName, arg, t1)); // t1 ← value
+
+      if (i < 6) {
+        // first six → a2…a7. Don't modify actual a2...a7, put them into the stack first
+        instructions.add(new Move_Id_Reg(tmpSlot(argRegisters.get(i)), t1));
+      } else {
+        // rest stay in their identifier slot on the call frame
+        instructions.add(new Move_Id_Reg(arg, t1));
+      }
     }
+    // Set up a2...a7 for new call
+    for (int i = 0; i < Math.min(args.size(), argRegisters.size()); i++) {
+      instructions.add(new Move_Reg_Id(argRegisters.get(i), tmpSlot(argRegisters.get(i))));
+    }
+
     instructions.add(new Call(t0, t0, args));
+    callCounter++;
 
     for (Register callerSavedRegister : callerSavedRegisters) {
       if (allocator.isCallerRegLiveAcrossCall(funcName, callerSavedRegister, currentLine)) {
@@ -403,10 +419,10 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       }
     }
 
-    // for (Register argRegister : argRegisters) {
-    // Identifier argId = genStackIdentifier(argRegister);
-    // instructions.add(new Move_Reg_Id(argRegister, argId));
-    // }
+    for (Register argRegister : argRegisters) {
+      Identifier argId = genStackIdentifier(argRegister);
+      instructions.add(new Move_Reg_Id(argRegister, argId));
+    }
 
     instructions.add(storeTo(funcName, lhs, t0));
 
@@ -435,5 +451,9 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
   private Identifier genStackIdentifier(Register reg) {
     String id = "stack_save_" + reg;
     return new Identifier(id);
+  }
+
+  private Identifier tmpSlot(Register reg) {
+    return new Identifier("_argtmp_" + (callCounter) + "_" + reg);
   }
 }

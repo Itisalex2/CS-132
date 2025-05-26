@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import IR.token.Identifier;
 import IR.token.Register;
 import model.FastLivelinessModel;
 import model.LiveInterval;
@@ -23,6 +24,7 @@ public class LinearScanRegisterAllocator {
   Map<String, Map<String, String>> registerAllocationTable = new HashMap<>();
   Map<String, Set<String>> spillTable = new HashMap<>();
   FastLivelinessModel fastLivelinessModel;
+  private static final String[] PARAM_REGS = { "a2", "a3", "a4", "a5", "a6", "a7" };
 
   public LinearScanRegisterAllocator(FastLivelinessModel fastLivelinessModel, int maxRegisters) {
     this.maxRegisters = maxRegisters;
@@ -47,11 +49,21 @@ public class LinearScanRegisterAllocator {
     initializeRegisterPool();
     registerAllocationTable.put(funcName, new HashMap<>());
     spillTable.put(funcName, new HashSet<>());
+
+    List<Identifier> formals = fastLivelinessModel.getFormalParameters(funcName);
+    Set<String> reservedParams = new HashSet<>();
+
+    for (int i = 0; i < Math.min(6, formals.size()); i++) {
+      String var = formals.get(i).toString();
+      registerAllocationTable.get(funcName).put(var, PARAM_REGS[i]);
+      reservedParams.add(var); // remember to skip interval
+    }
+
     Map<String, Integer> defMap = fastLivelinessModel.getDefMapForFunc(funcName);
     Map<String, Integer> useMap = fastLivelinessModel.getUseMapForFunc(funcName);
 
     List<LiveInterval> intervals = defMap.entrySet().stream()
-        // keep only variables that have a *real* use (>= 0)
+        .filter(e -> !reservedParams.contains(e.getKey()))
         .filter(e -> {
           Integer useLine = useMap.get(e.getKey());
           return useLine != null && useLine >= 0;

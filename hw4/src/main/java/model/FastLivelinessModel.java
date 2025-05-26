@@ -1,7 +1,11 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import IR.token.Identifier;
 
 /*
  * Keeps track of def and use of variables of each func in the program.
@@ -10,6 +14,7 @@ import java.util.Map;
 public class FastLivelinessModel {
   private Map<String, Map<String, Integer>> defMap = new HashMap<>();
   private Map<String, Map<String, Integer>> useMap = new HashMap<>();
+  private final Map<String, List<Identifier>> formalMap = new HashMap<>();
 
   public void putDef(String funcName, String var, int line) {
     Map<String, Integer> funcDefMap = defMap.computeIfAbsent(funcName, k -> new HashMap<>());
@@ -44,6 +49,14 @@ public class FastLivelinessModel {
 
   public Map<String, Map<String, Integer>> getUseMap() {
     return useMap;
+  }
+
+  public void putFormalParameters(String func, List<Identifier> params) {
+    formalMap.put(func, new ArrayList<>(params));
+  }
+
+  public List<Identifier> getFormalParameters(String func) {
+    return formalMap.getOrDefault(func, new ArrayList<>());
   }
 
   @Override
