@@ -65,7 +65,7 @@ public class LinearScanRegisterAllocator {
 
     List<LiveInterval> intervals = defMap.entrySet().stream()
         .filter(e -> !reservedParams.contains(e.getKey()))
-        .filter(e -> useMap.get(e.getKey()) != null && useMap.get(e.getKey()) >= 0)
+        .filter(e -> !fastLivelinessModel.isDeadVariable(funcName, e.getKey()))
         .map(e -> {
           String var = e.getKey();
           int start = e.getValue();
@@ -215,6 +215,10 @@ public class LinearScanRegisterAllocator {
       }
     }
     return false;
+  }
+
+  public boolean isDeadVariable(String funcName, String var) {
+    return fastLivelinessModel.isDeadVariable(funcName, var);
   }
 
   private boolean containsCall(String funcName, int start, int end) {

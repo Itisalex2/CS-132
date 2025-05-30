@@ -163,6 +163,11 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     int rhs = n.rhs;
 
     List<Instruction> instructions = new ArrayList<>();
+
+    if (allocator.isDeadVariable(funcName, lhs.toString())) {
+      return TranslationResult.ofInstructions(instructions);
+    }
+
     instructions.add(new Move_Reg_Integer(t0, rhs));
     instructions.add(storeTo(funcName, lhs, t0));
 
@@ -178,6 +183,11 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     FunctionName rhs = n.rhs;
 
     List<Instruction> instructions = new ArrayList<>();
+
+    if (allocator.isDeadVariable(funcName, lhs.toString())) {
+      return TranslationResult.ofInstructions(instructions);
+    }
+
     instructions.add(new Move_Reg_FuncName(t0, rhs));
     instructions.add(storeTo(funcName, lhs, t0));
 
@@ -305,6 +315,11 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     Identifier rhs = n.rhs;
 
     List<Instruction> instructions = new ArrayList<>();
+
+    if (allocator.isDeadVariable(funcName, lhs.toString())) {
+      return TranslationResult.ofInstructions(instructions);
+    }
+
     instructions.add(loadFrom(funcName, rhs, t0));
     instructions.add(storeTo(funcName, lhs, t0));
 

@@ -71,6 +71,21 @@ public class FastLivelinessModel {
     return callLinesMap.getOrDefault(funcName, Collections.emptySet());
   }
 
+  public boolean isDeadVariable(String funcName, String var) {
+    Map<String, Integer> defMap = getDefMapForFunc(funcName);
+    Map<String, Integer> useMap = getUseMapForFunc(funcName);
+
+    if (!defMap.containsKey(var)) {
+      return false;
+    }
+
+    int defLine = defMap.get(var);
+    int useLine = useMap.getOrDefault(var, -1);
+
+    // A variable is dead if it is defined but never used after its definition
+    return useLine == -1 || useLine < defLine;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
