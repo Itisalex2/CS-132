@@ -202,5 +202,6 @@ public class FastLivelinessVisitor implements ArgVisitor<String> {
     for (Identifier arg : n.args) {
       model.putUse(funcName, arg.toString(), currentLine);
     }
+    model.putCallLine(funcName, currentLine);
   }
 }

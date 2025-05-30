@@ -18,7 +18,8 @@ import model.FastLivelinessModel;
 import model.LiveInterval;
 
 public class LinearScanRegisterAllocator {
-  LinkedList<String> availableRegisters;
+  private LinkedList<String> availableCalleeSavedRegisters = new LinkedList<>();
+  private LinkedList<String> availableCallerSavedRegisters = new LinkedList<>();
   int maxRegisters;
   List<LiveInterval> activeIntervals = new ArrayList<>();
   Map<String, Map<String, String>> registerAllocationTable = new HashMap<>();
@@ -46,7 +47,7 @@ public class LinearScanRegisterAllocator {
   }
 
   private void computeRegisterAllocationTableForFunction(String funcName) {
-    initializeRegisterPool();
+    initializeRegisterPool(funcName);
     registerAllocationTable.put(funcName, new HashMap<>());
     spillTable.put(funcName, new HashSet<>());
 
@@ -64,34 +65,30 @@ public class LinearScanRegisterAllocator {
 
     List<LiveInterval> intervals = defMap.entrySet().stream()
         .filter(e -> !reservedParams.contains(e.getKey()))
-        .filter(e -> {
-          Integer useLine = useMap.get(e.getKey());
-          return useLine != null && useLine >= 0;
+        .filter(e -> useMap.get(e.getKey()) != null && useMap.get(e.getKey()) >= 0)
+        .map(e -> {
+          String var = e.getKey();
+          int start = e.getValue();
+          int end = useMap.get(var);
+          boolean containsCall = containsCall(funcName, start, end);
+          return new LiveInterval(var, start, end, containsCall);
         })
-        .map(e -> new LiveInterval(
-            e.getKey(), // var
-            e.getValue(), // start = def line
-            useMap.get(e.getKey()))) // end = first use line
         .sorted(Comparator.comparingInt(i -> i.start))
         .collect(Collectors.toList());
 
-    // LinearScanRegsiterAllocation algorithm:
-    // https://web.cs.ucla.edu/~palsberg/course/cs132/linearscan.pdf
     activeIntervals.clear();
 
     for (LiveInterval interval : intervals) {
       expireOldIntervals(interval, funcName);
-      if (activeIntervals.size() == maxRegisters) {
+      int totalFree = availableCalleeSavedRegisters.size() + availableCallerSavedRegisters.size();
+
+      if (totalFree == 0) {
         spillAtInterval(interval, funcName);
       } else {
-        String freeRegister = availableRegisters.poll();
-        if (freeRegister == null) {
-          spillTable.get(funcName).add(interval.var);
-        } else {
-          registerAllocationTable.get(funcName).put(interval.var, freeRegister);
-          activeIntervals.add(interval);
-          Collections.sort(activeIntervals, Comparator.comparingInt(i -> i.end));
-        }
+        String reg = selectRegister(interval.containsCall);
+        registerAllocationTable.get(funcName).put(interval.var, reg);
+        activeIntervals.add(interval);
+        Collections.sort(activeIntervals, Comparator.comparingInt(i -> i.end));
       }
     }
   }
@@ -106,8 +103,14 @@ public class LinearScanRegisterAllocator {
       LiveInterval activeInterval = it.next();
       if (activeInterval.end >= interval.start)
         break;
+
       String reg = registerAllocationTable.get(funcName).get(activeInterval.var);
-      availableRegisters.addFirst(reg);
+      // Return register to appropriate pool
+      if (reg.startsWith("s")) {
+        availableCalleeSavedRegisters.addFirst(reg);
+      } else {
+        availableCallerSavedRegisters.addFirst(reg);
+      }
       it.remove();
     }
   }
@@ -137,22 +140,35 @@ public class LinearScanRegisterAllocator {
     }
   }
 
-  private void initializeRegisterPool() {
-    availableRegisters = new LinkedList<>();
+  private void initializeRegisterPool(String funcName) {
+    availableCalleeSavedRegisters.clear();
+    availableCallerSavedRegisters.clear();
 
-    // t2 - t5, t0 & t1 are reserved as temporary registers
-    for (int i = 2; i <= 5 && availableRegisters.size() < maxRegisters; i++) {
-      availableRegisters.add("t" + i);
-    }
-    // s1 - s11
-    for (int i = 1; i <= 11 && availableRegisters.size() < maxRegisters; i++) {
-      availableRegisters.add("s" + i);
-    }
-    // a2 - a7
-    for (int i = 2; i <= 7 && availableRegisters.size() < maxRegisters; i++) {
-      availableRegisters.add("a" + i);
+    int numParams = fastLivelinessModel.getFormalParameters(funcName).size();
+    int numParamRegsUsed = Math.min(numParams, 6);
+
+    // Add s-registers (callee-saved)
+    for (int i = 1; i <= 11; i++) {
+      if (availableCalleeSavedRegisters.size() + availableCallerSavedRegisters.size() >= maxRegisters)
+        break;
+      availableCalleeSavedRegisters.add("s" + i);
     }
 
+    // Add t-registers (caller-saved)
+    for (int i = 2; i <= 5; i++) {
+      if (availableCalleeSavedRegisters.size() + availableCallerSavedRegisters.size() >= maxRegisters)
+        break;
+      availableCallerSavedRegisters.add("t" + i);
+    }
+
+    // Add available a-registers (not used for parameters)
+    for (int i = 2; i <= 7; i++) {
+      if (availableCalleeSavedRegisters.size() + availableCallerSavedRegisters.size() >= maxRegisters)
+        break;
+      if (i - 2 >= numParamRegsUsed) { // Only unused a-registers
+        availableCallerSavedRegisters.add("a" + i);
+      }
+    }
   }
 
   public boolean isSpilled(String funcName, String var) {
@@ -194,11 +210,28 @@ public class LinearScanRegisterAllocator {
       int lastUse = fastLivelinessModel.getUseMapForFunc(func).getOrDefault(var, -1);
       int firstDef = fastLivelinessModel.getDefMapForFunc(func).getOrDefault(var, 0);
 
-      if (firstDef <= callLine && callLine < lastUse) {
+      if (firstDef < callLine && callLine < lastUse) {
         return true;
       }
     }
     return false;
+  }
+
+  private boolean containsCall(String funcName, int start, int end) {
+    return fastLivelinessModel.getCallLinesForFunc(funcName).stream()
+        .anyMatch(line -> start < line && line < end);
+  }
+
+  private String selectRegister(boolean containsCall) {
+    if (containsCall) {
+      return !availableCalleeSavedRegisters.isEmpty()
+          ? availableCalleeSavedRegisters.poll()
+          : availableCallerSavedRegisters.poll();
+    } else {
+      return !availableCallerSavedRegisters.isEmpty()
+          ? availableCallerSavedRegisters.poll()
+          : availableCalleeSavedRegisters.poll();
+    }
   }
 
   @Override

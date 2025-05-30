@@ -107,10 +107,11 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     String functionName = n.parent.functionName.name;
     List<sparrow.Instruction> instructions = n.instructions;
     Identifier returnId = n.return_id;
+    boolean isMain = functionName.equalsIgnoreCase("main");
 
     List<Instruction> translatedInstructions = new ArrayList<>();
     for (Register calleeSavedRegister : calleeSavedRegisters) {
-      if (functionName != "main" && allocator.registerAllocated(functionName, calleeSavedRegister)) {
+      if (!isMain && allocator.registerAllocated(functionName, calleeSavedRegister)) {
         Identifier calleeSavedId = genStackIdentifier(calleeSavedRegister);
         translatedInstructions.add(new Move_Id_Reg(calleeSavedId,
             calleeSavedRegister));
@@ -135,7 +136,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     translatedInstructions.add(new Move_Id_Reg(returnId, t0));
 
     for (Register calleeSavedRegister : calleeSavedRegisters) {
-      if (functionName != "main" && allocator.registerAllocated(functionName, calleeSavedRegister)) {
+      if (!isMain && allocator.registerAllocated(functionName, calleeSavedRegister)) {
         Identifier calleeSavedId = genStackIdentifier(calleeSavedRegister);
         translatedInstructions.add(new Move_Reg_Id(calleeSavedRegister,
             calleeSavedId));

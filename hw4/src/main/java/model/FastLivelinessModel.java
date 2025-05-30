@@ -1,9 +1,12 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import IR.token.Identifier;
 
@@ -15,6 +18,7 @@ public class FastLivelinessModel {
   private Map<String, Map<String, Integer>> defMap = new HashMap<>();
   private Map<String, Map<String, Integer>> useMap = new HashMap<>();
   private final Map<String, List<Identifier>> formalMap = new HashMap<>();
+  private Map<String, Set<Integer>> callLinesMap = new HashMap<>();
 
   public void putDef(String funcName, String var, int line) {
     Map<String, Integer> funcDefMap = defMap.computeIfAbsent(funcName, k -> new HashMap<>());
@@ -57,6 +61,14 @@ public class FastLivelinessModel {
 
   public List<Identifier> getFormalParameters(String func) {
     return formalMap.getOrDefault(func, new ArrayList<>());
+  }
+
+  public void putCallLine(String funcName, int line) {
+    callLinesMap.computeIfAbsent(funcName, k -> new HashSet<>()).add(line);
+  }
+
+  public Set<Integer> getCallLinesForFunc(String funcName) {
+    return callLinesMap.getOrDefault(funcName, Collections.emptySet());
   }
 
   @Override
