@@ -154,9 +154,10 @@ public class LinearScanRegisterAllocator {
       availableCalleeSavedRegisters.add("s" + i);
     }
 
-    // Add t-registers (caller-saved)
+    // // Add t-registers (caller-saved)
     for (int i = 2; i <= 5; i++) {
-      if (availableCalleeSavedRegisters.size() + availableCallerSavedRegisters.size() >= maxRegisters)
+      if (availableCalleeSavedRegisters.size() +
+          availableCallerSavedRegisters.size() >= maxRegisters)
         break;
       availableCallerSavedRegisters.add("t" + i);
     }

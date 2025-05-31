@@ -426,6 +426,8 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
     System.err.println("Function name: " + funcName);
     System.err.println("Current instructions: " + instructions);
 
+    instructions.add(loadFrom(funcName, callee, t0));
+
     /*
      * Register shuffling
      */
@@ -447,7 +449,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       }
     }
 
-    List<Instruction> newInstructions = ParallelCopyResolver.resolveMoves(moves, t0);
+    List<Instruction> newInstructions = ParallelCopyResolver.resolveMoves(moves, t1);
     instructions.addAll(newInstructions);
 
     /*
@@ -457,7 +459,6 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
         ? args.subList(6, args.size())
         : new ArrayList<>();
 
-    instructions.add(loadFrom(funcName, callee, t0));
     instructions.add(new Call(t0, t0, newArgs));
     callCounter++;
 

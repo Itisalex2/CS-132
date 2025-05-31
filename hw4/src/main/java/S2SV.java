@@ -24,7 +24,7 @@ public class S2SV {
     FastLivelinessModel fastLivelinessModel = fastLivelinessVisitor.getFastLivelinessModel();
     System.err.println(fastLivelinessModel.toString());
 
-    LinearScanRegisterAllocator linearScanRegisterAllocator = new LinearScanRegisterAllocator(fastLivelinessModel, 15);
+    LinearScanRegisterAllocator linearScanRegisterAllocator = new LinearScanRegisterAllocator(fastLivelinessModel, 21);
     linearScanRegisterAllocator.computeRegisterAllocationTable();
     System.err.println(linearScanRegisterAllocator);
 
