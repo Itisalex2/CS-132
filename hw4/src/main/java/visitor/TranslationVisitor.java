@@ -132,8 +132,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       currentLine++;
     }
 
-    translatedInstructions.add(loadFrom(functionName, returnId, t0));
-    translatedInstructions.add(new Move_Id_Reg(returnId, t0));
+    translatedInstructions.add(loadFrom(functionName, returnId, t1));
 
     for (Register calleeSavedRegister : calleeSavedRegisters) {
       if (!isMain && allocator.registerAllocated(functionName, calleeSavedRegister)) {
@@ -476,7 +475,7 @@ public class TranslationVisitor implements ArgRetVisitor<String, TranslationResu
       }
     }
 
-    instructions.add(storeTo(funcName, lhs, t0));
+    instructions.add(storeTo(funcName, lhs, t1));
 
     return TranslationResult.ofInstructions(instructions);
   }
