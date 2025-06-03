@@ -1,336 +1,576 @@
-func Main()
-t3 = @f
-t0 = call t3()
-v1 = t0
-t1 = v1
-print(t1)
-      return v1
+first pass was okay
 
-func f()
-stack_save_s1 = s1
-stack_save_s2 = s2
-stack_save_s3 = s3
-stack_save_s4 = s4
-stack_save_s5 = s5
-stack_save_s6 = s6
-stack_save_s7 = s7
-stack_save_s8 = s8
-stack_save_s9 = s9
-stack_save_s10 = s10
-stack_save_s11 = s11
-t3 = 10
-t0 = 20
-b = t0
-t2 = b
-t0 = t3 + t2
-c = t0
-t4 = 30
-t5 = t3 < t4
-if0 t5 goto L8
-t2 = c
-t0 = t3 + t2
-d = t0
-t2 = b
-t0 = t3 + t2
-f = t0
-goto L10
-L8:
-t1 = b
-t2 = c
-t0 = t1 + t2
-e = t0
-goto L14
-L10:
-s1 = 50
-t1 = d
-t0 = t1 + s1
-b = t0
-t1 = c
-t2 = d
-s2 = t1 + t2
-t2 = f
-s3 = s2 + t2
-print(s3)
-t1 = c
-t2 = f
-t0 = t1 + t2
-e = t0
-s4 = 40
-t1 = b
-t0 = t1 + s4
-b = t0
-goto L8
-L14:
-s5 = 10
-t0 = t3 + s5
-f = t0
-L22:
-t0 = 55
-b = t0
-s6 = 20
-t0 = t3 - s6
-c = t0
-t1 = b
-t2 = c
-s7 = t1 < t2
-if0 s7 goto L20
-t1 = c
-t2 = b
-t0 = t1 + t2
-d = t0
-t1 = d
-t0 = t1 - s5
-e = t0
-t1 = d
-t2 = e
-s8 = t1 + t2
-print(s8)
-t1 = c
-t2 = e
-t0 = t1 + t2
-b = t0
-s9 = 2
-t2 = b
-t0 = s9 - t2
-f = t0
-goto L22
-L20:
-s10 = 7
-t1 = f
-t0 = t1 + s10
-b = t0
-t1 = c
-t2 = b
-t0 = t1 + t2
-c = t0
-s9 = 2
-t2 = c
-t0 = s9 * t2
-e = t0
-t1 = f
-t0 = t1 + s5
-g = t0
-s11 = 55
-h = s11
-t0 = @g
-v2 = t0
-t1 = g
-t2 = h
-t4 = t1 < t2
-if0 t4 goto L27
-t1 = g
-t0 = t1 - s6
-i = t0
-t0 = b
-a2 = t0
-t0 = c
-a3 = t0
-t0 = d
-a4 = t0
-t0 = e
-a5 = t0
-t0 = f
-a6 = t0
-t0 = g
-a7 = t0
-t0 = h
-stack_arg_6 = t0
-t0 = i
-stack_arg_7 = t0
-t1 = v2
-t0 = call t1(stack_arg_6 stack_arg_7)
-h = t0
-t1 = i
-t2 = h
-t0 = t1 + t2
-j = t0
-goto L29
-L27:
-t0 = 1
-one = t0
-t1 = g
-t2 = one
-t0 = t1 + t2
-k = t0
-t2 = k
-t0 = s9 * t2
-j = t0
-L29:
-t0 = 5
-five = t0
-t1 = j
-t2 = five
-t0 = t1 - t2
-l = t0
-t1 = g
-t2 = l
-t0 = t1 + t2
-k = t0
-t1 = j
-t2 = k
-t0 = t1 - t2
-q = t0
-t1 = q
-t2 = l
-t0 = t1 + t2
-r = t0
-t1 = r
-print(t1)
-t1 = j
-t2 = k
-t0 = t1 + t2
-i = t0
-t1 = c
-t2 = d
-t0 = t1 + t2
-c = t0
-t1 = d
-t0 = t1 + s6
-m = t0
-t1 = i
-t2 = m
-t0 = t1 + t2
-n = t0
-t1 = d
-t2 = n
-s2 = t1 < t2
-L3:
-if0 s2 goto L12
-t1 = d
-t2 = m
-t0 = t1 + t2
-o = t0
-t0 = 30
-thirty = t0
-t1 = o
-t2 = thirty
-t0 = t1 + t2
-p = t0
-t1 = i
-t2 = p
-t0 = t1 - t2
-p = t0
-t1 = o
-t2 = p
-t0 = t1 - t2
-n = t0
-t0 = 0
-zero = t0
-t1 = n
-t2 = zero
-s2 = t1 * t2
-t1 = c
-t2 = g
-t0 = t1 + t2
-m = t0
-t1 = o
-t2 = n
-t0 = t1 + t2
-n = t0
-t1 = m
-t2 = n
-t0 = t1 - t2
-u = t0
-t1 = u
-print(t1)
-goto L3
-L12:
-t1 = k
-t2 = n
-t0 = t1 - t2
-g = t0
-t1 = o
-t2 = g
-t0 = t1 + t2
-g = t0
-s3 = stack_save_s3
-s4 = stack_save_s4
-s5 = stack_save_s5
-s11 = stack_save_s11
-s6 = stack_save_s6
-s10 = stack_save_s10
-s7 = stack_save_s7
-s8 = stack_save_s8
-s9 = stack_save_s9
-s1 = stack_save_s1
-s2 = stack_save_s2
-      return g
+program name is 
 
-func g(x7 x8)
-stack_save_s1 = s1
-stack_save_s2 = s2
-stack_save_s3 = s3
-stack_save_s4 = s4
-stack_save_s5 = s5
-stack_save_s6 = s6
-stack_save_s7 = s7
-t3 = a2 + a3
-t4 = a4 + a5
-t5 = a6 + a7
-t1 = x7
-t2 = x8
-s1 = t1 + t2
-t0 = 10
-ten = t0
-t1 = ten
-s2 = t1
-t1 = x8
-t0 = t1 < a2
-v3 = t0
-t1 = v3
-if0 t1 goto L42
-s3 = @g
-stack_save_t3 = t3
-stack_save_t4 = t4
-stack_save_t5 = t5
-stack_save_a2 = a2
-stack_save_a3 = a3
-stack_save_a4 = a4
-stack_save_a5 = a5
-stack_save_a6 = a6
-stack_save_a7 = a7
-t0 = v3
-a2 = t0
-t0 = x7
-a3 = t0
-t0 = v3
-a4 = t0
-t0 = stack_save_a6
-a5 = t0
-t0 = ten
-a6 = t0
-t0 = v3
-a7 = t0
-t0 = stack_save_a3
-stack_arg_6 = t0
-t0 = ten
-stack_arg_7 = t0
-t0 = call s3(stack_arg_6 stack_arg_7)
-t4 = stack_save_t4
-t5 = stack_save_t5
-a2 = stack_save_a2
-a3 = stack_save_a3
-a4 = stack_save_a4
-a5 = stack_save_a5
-a6 = stack_save_a6
-a7 = stack_save_a7
-t3 = stack_save_t3
-t3 = t0
-L42:
-s2 = s1 - t3
-s4 = t4 * s2
-s5 = t5 - s4
-s6 = s1 + s2
-s7 = s2 + s4
-t0 = s5 + s6
-j = t0
-s3 = stack_save_s3
-s4 = stack_save_s4
-s5 = stack_save_s5
-s6 = stack_save_s6
-s7 = stack_save_s7
-s1 = stack_save_s1
-s2 = stack_save_s2
-      return j
+Spitting sparrowV file:
+  .equiv @sbrk, 9
+  .equiv @print_string, 4
+  .equiv @print_char, 11
+  .equiv @print_int, 1
+  .equiv @exit 10
+  .equiv @exit2, 17
+.text
 
+  jal Main                                 # Jump to Main
+  li a0, @exit                             # Code for ecall: exit
+  ecall
+
+.globl Main
+Main:
+sw fp, -8(sp)
+mv fp, sp
+li t6, 96
+sub sp, sp, t6
+sw ra, -4(fp)
+sw s1, -12(fp)
+sw s2, -16(fp)
+sw s3, -20(fp)
+sw s4, -24(fp)
+sw s5, -28(fp)
+sw s6, -32(fp)
+sw s7, -36(fp)
+sw s8, -40(fp)
+sw s9, -44(fp)
+sw s10, -48(fp)
+sw s11, -52(fp)
+la t3, f
+li t6, 24
+sub sp, sp, t6
+sw a2, 0(sp)
+sw a3, 4(sp)
+sw a4, 8(sp)
+sw a5, 12(sp)
+sw a6, 16(sp)
+sw a7, 20(sp)
+jalr ra, t3, 0
+mv t0, a0
+sw t0, -56(fp)
+lw t1, -56(fp)
+mv a1, t1
+li a0, @print_int
+ecall
+li a1, 10                                # Load newline character
+li a0, @print_char                       # Code for print_char ecall
+ecall                                    # Print newline
+lw s1, -12(fp)
+lw s2, -16(fp)
+lw s3, -20(fp)
+lw s4, -24(fp)
+lw s5, -28(fp)
+lw s6, -32(fp)
+lw s7, -36(fp)
+lw s8, -40(fp)
+lw s9, -44(fp)
+lw s10, -48(fp)
+lw s11, -52(fp)
+lw a0, -56(fp)
+lw ra, -4(fp)
+lw fp, -8(fp)
+addi sp, sp, 96
+addi sp, sp, 24
+li t6, 0
+jalr t6, ra, 0
+.globl f
+f:
+sw fp, -8(sp)
+mv fp, sp
+li t6, 236
+sub sp, sp, t6
+sw ra, -4(fp)
+sw s1, -12(fp)
+sw s2, -16(fp)
+sw s3, -20(fp)
+sw s4, -24(fp)
+sw s5, -28(fp)
+sw s6, -32(fp)
+sw s7, -36(fp)
+sw s8, -40(fp)
+sw s9, -44(fp)
+sw s10, -48(fp)
+sw s11, -52(fp)
+sw s1, -56(fp)
+sw s2, -60(fp)
+sw s3, -64(fp)
+sw s4, -68(fp)
+sw s5, -72(fp)
+sw s6, -76(fp)
+sw s7, -80(fp)
+sw s8, -84(fp)
+sw s9, -88(fp)
+sw s10, -92(fp)
+sw s11, -96(fp)
+li t3, 10
+li t0, 20
+sw t0, -100(fp)
+lw t2, -100(fp)
+add t0, t3, t2
+sw t0, -104(fp)
+li t4, 30
+slt t5, t3, t4
+li t6, 0
+bne t5, t6, m1
+jal t6, v1
+m1:
+lw t2, -104(fp)
+add t0, t3, t2
+sw t0, -108(fp)
+lw t2, -100(fp)
+add t0, t3, t2
+sw t0, -112(fp)
+li t6, 0
+jal t6, v2
+v1:
+lw t1, -100(fp)
+lw t2, -104(fp)
+add t0, t1, t2
+sw t0, -116(fp)
+li t6, 0
+jal t6, v3
+v2:
+li s1, 50
+lw t1, -108(fp)
+add t0, t1, s1
+sw t0, -100(fp)
+lw t1, -104(fp)
+lw t2, -108(fp)
+add s2, t1, t2
+lw t2, -112(fp)
+add s3, s2, t2
+mv a1, s3
+li a0, @print_int
+ecall
+li a1, 10                                # Load newline character
+li a0, @print_char                       # Code for print_char ecall
+ecall                                    # Print newline
+lw t1, -104(fp)
+lw t2, -112(fp)
+add t0, t1, t2
+sw t0, -116(fp)
+li s4, 40
+lw t1, -100(fp)
+add t0, t1, s4
+sw t0, -100(fp)
+li t6, 0
+jal t6, v1
+v3:
+li s5, 10
+add t0, t3, s5
+sw t0, -112(fp)
+v4:
+li t0, 55
+sw t0, -100(fp)
+li s6, 20
+sub t0, t3, s6
+sw t0, -104(fp)
+lw t1, -100(fp)
+lw t2, -104(fp)
+slt s7, t1, t2
+li t6, 0
+bne s7, t6, m2
+jal t6, v5
+m2:
+lw t1, -104(fp)
+lw t2, -100(fp)
+add t0, t1, t2
+sw t0, -108(fp)
+lw t1, -108(fp)
+sub t0, t1, s5
+sw t0, -116(fp)
+lw t1, -108(fp)
+lw t2, -116(fp)
+add s8, t1, t2
+mv a1, s8
+li a0, @print_int
+ecall
+li a1, 10                                # Load newline character
+li a0, @print_char                       # Code for print_char ecall
+ecall                                    # Print newline
+lw t1, -104(fp)
+lw t2, -116(fp)
+add t0, t1, t2
+sw t0, -100(fp)
+li s9, 2
+lw t2, -100(fp)
+sub t0, s9, t2
+sw t0, -112(fp)
+li t6, 0
+jal t6, v4
+v5:
+li s10, 7
+lw t1, -112(fp)
+add t0, t1, s10
+sw t0, -100(fp)
+lw t1, -104(fp)
+lw t2, -100(fp)
+add t0, t1, t2
+sw t0, -104(fp)
+li s9, 2
+lw t2, -104(fp)
+mul t0, s9, t2
+sw t0, -116(fp)
+lw t1, -112(fp)
+add t0, t1, s5
+sw t0, -120(fp)
+li s11, 55
+sw s11, -124(fp)
+la t0, g
+sw t0, -128(fp)
+lw t1, -120(fp)
+lw t2, -124(fp)
+slt t4, t1, t2
+li t6, 0
+bne t4, t6, m3
+jal t6, v6
+m3:
+lw t1, -120(fp)
+sub t0, t1, s6
+sw t0, -132(fp)
+lw t0, -100(fp)
+mv a2, t0
+lw t0, -104(fp)
+mv a3, t0
+lw t0, -108(fp)
+mv a4, t0
+lw t0, -116(fp)
+mv a5, t0
+lw t0, -112(fp)
+mv a6, t0
+lw t0, -120(fp)
+mv a7, t0
+lw t0, -124(fp)
+sw t0, -136(fp)
+lw t0, -132(fp)
+sw t0, -140(fp)
+lw t1, -128(fp)
+li t6, 32
+sub sp, sp, t6
+sw a2, 0(sp)
+sw a3, 4(sp)
+sw a4, 8(sp)
+sw a5, 12(sp)
+sw a6, 16(sp)
+sw a7, 20(sp)
+lw t6, -136(fp)
+sw t6, 24(sp)
+lw t6, -140(fp)
+sw t6, 28(sp)
+jalr ra, t1, 0
+mv t0, a0
+sw t0, -124(fp)
+lw t1, -132(fp)
+lw t2, -124(fp)
+add t0, t1, t2
+sw t0, -144(fp)
+li t6, 0
+jal t6, v7
+v6:
+li t0, 1
+sw t0, -148(fp)
+lw t1, -120(fp)
+lw t2, -148(fp)
+add t0, t1, t2
+sw t0, -152(fp)
+lw t2, -152(fp)
+mul t0, s9, t2
+sw t0, -144(fp)
+v7:
+li t0, 5
+sw t0, -156(fp)
+lw t1, -144(fp)
+lw t2, -156(fp)
+sub t0, t1, t2
+sw t0, -160(fp)
+lw t1, -120(fp)
+lw t2, -160(fp)
+add t0, t1, t2
+sw t0, -152(fp)
+lw t1, -144(fp)
+lw t2, -152(fp)
+sub t0, t1, t2
+sw t0, -164(fp)
+lw t1, -164(fp)
+lw t2, -160(fp)
+add t0, t1, t2
+sw t0, -168(fp)
+lw t1, -168(fp)
+mv a1, t1
+li a0, @print_int
+ecall
+li a1, 10                                # Load newline character
+li a0, @print_char                       # Code for print_char ecall
+ecall                                    # Print newline
+lw t1, -144(fp)
+lw t2, -152(fp)
+add t0, t1, t2
+sw t0, -132(fp)
+lw t1, -104(fp)
+lw t2, -108(fp)
+add t0, t1, t2
+sw t0, -104(fp)
+lw t1, -108(fp)
+add t0, t1, s6
+sw t0, -172(fp)
+lw t1, -132(fp)
+lw t2, -172(fp)
+add t0, t1, t2
+sw t0, -176(fp)
+lw t1, -108(fp)
+lw t2, -176(fp)
+slt s2, t1, t2
+v8:
+li t6, 0
+bne s2, t6, m4
+jal t6, v9
+m4:
+lw t1, -108(fp)
+lw t2, -172(fp)
+add t0, t1, t2
+sw t0, -180(fp)
+li t0, 30
+sw t0, -184(fp)
+lw t1, -180(fp)
+lw t2, -184(fp)
+add t0, t1, t2
+sw t0, -188(fp)
+lw t1, -132(fp)
+lw t2, -188(fp)
+sub t0, t1, t2
+sw t0, -188(fp)
+lw t1, -180(fp)
+lw t2, -188(fp)
+sub t0, t1, t2
+sw t0, -176(fp)
+li t0, 0
+sw t0, -192(fp)
+lw t1, -176(fp)
+lw t2, -192(fp)
+mul s2, t1, t2
+lw t1, -104(fp)
+lw t2, -120(fp)
+add t0, t1, t2
+sw t0, -172(fp)
+lw t1, -180(fp)
+lw t2, -176(fp)
+add t0, t1, t2
+sw t0, -176(fp)
+lw t1, -172(fp)
+lw t2, -176(fp)
+sub t0, t1, t2
+sw t0, -196(fp)
+lw t1, -196(fp)
+mv a1, t1
+li a0, @print_int
+ecall
+li a1, 10                                # Load newline character
+li a0, @print_char                       # Code for print_char ecall
+ecall                                    # Print newline
+li t6, 0
+jal t6, v8
+v9:
+lw t1, -152(fp)
+lw t2, -176(fp)
+sub t0, t1, t2
+sw t0, -120(fp)
+lw t1, -180(fp)
+lw t2, -120(fp)
+add t0, t1, t2
+sw t0, -120(fp)
+lw s3, -64(fp)
+lw s4, -68(fp)
+lw s5, -72(fp)
+lw s11, -96(fp)
+lw s6, -76(fp)
+lw s10, -92(fp)
+lw s7, -80(fp)
+lw s8, -84(fp)
+lw s9, -88(fp)
+lw s1, -56(fp)
+lw s2, -60(fp)
+lw s1, -12(fp)
+lw s2, -16(fp)
+lw s3, -20(fp)
+lw s4, -24(fp)
+lw s5, -28(fp)
+lw s6, -32(fp)
+lw s7, -36(fp)
+lw s8, -40(fp)
+lw s9, -44(fp)
+lw s10, -48(fp)
+lw s11, -52(fp)
+lw a0, -120(fp)
+lw ra, -4(fp)
+lw fp, -8(fp)
+addi sp, sp, 236
+addi sp, sp, 24
+li t6, 0
+jalr t6, ra, 0
+.globl g
+g:
+sw fp, -8(sp)
+mv fp, sp
+li t6, 184
+sub sp, sp, t6
+sw ra, -4(fp)
+sw s1, -12(fp)
+sw s2, -16(fp)
+sw s3, -20(fp)
+sw s4, -24(fp)
+sw s5, -28(fp)
+sw s6, -32(fp)
+sw s7, -36(fp)
+sw s8, -40(fp)
+sw s9, -44(fp)
+sw s10, -48(fp)
+sw s11, -52(fp)
+sw s1, -56(fp)
+sw s2, -60(fp)
+sw s3, -64(fp)
+sw s4, -68(fp)
+sw s5, -72(fp)
+sw s6, -76(fp)
+sw s7, -80(fp)
+add t3, a2, a3
+add t4, a4, a5
+add t5, a6, a7
+lw t1, 24(fp)
+lw t2, 28(fp)
+add s1, t1, t2
+li t0, 10
+sw t0, -84(fp)
+lw t1, -84(fp)
+mv s2, t1
+lw t1, 28(fp)
+slt t0, t1, a2
+sw t0, -88(fp)
+lw t1, -88(fp)
+li t6, 0
+bne t1, t6, m5
+jal t6, v10
+m5:
+la s3, g
+sw t3, -92(fp)
+sw t4, -96(fp)
+sw t5, -100(fp)
+sw a2, -104(fp)
+sw a3, -108(fp)
+sw a4, -112(fp)
+sw a5, -116(fp)
+sw a6, -120(fp)
+sw a7, -124(fp)
+lw t0, -88(fp)
+mv a2, t0
+lw t0, 24(fp)
+mv a3, t0
+lw t0, -88(fp)
+mv a4, t0
+lw t0, -120(fp)
+mv a5, t0
+lw t0, -84(fp)
+mv a6, t0
+lw t0, -88(fp)
+mv a7, t0
+lw t0, -108(fp)
+sw t0, -128(fp)
+lw t0, -84(fp)
+sw t0, -132(fp)
+li t6, 32
+sub sp, sp, t6
+sw a2, 0(sp)
+sw a3, 4(sp)
+sw a4, 8(sp)
+sw a5, 12(sp)
+sw a6, 16(sp)
+sw a7, 20(sp)
+lw t6, -128(fp)
+sw t6, 24(sp)
+lw t6, -132(fp)
+sw t6, 28(sp)
+jalr ra, s3, 0
+mv t0, a0
+lw t4, -96(fp)
+lw t5, -100(fp)
+lw a2, -104(fp)
+lw a3, -108(fp)
+lw a4, -112(fp)
+lw a5, -116(fp)
+lw a6, -120(fp)
+lw a7, -124(fp)
+lw t3, -92(fp)
+mv t3, t0
+v10:
+sub s2, s1, t3
+mul s4, t4, s2
+sub s5, t5, s4
+add s6, s1, s2
+add s7, s2, s4
+add t0, s5, s6
+sw t0, -136(fp)
+lw s3, -64(fp)
+lw s4, -68(fp)
+lw s5, -72(fp)
+lw s6, -76(fp)
+lw s7, -80(fp)
+lw s1, -56(fp)
+lw s2, -60(fp)
+lw s1, -12(fp)
+lw s2, -16(fp)
+lw s3, -20(fp)
+lw s4, -24(fp)
+lw s5, -28(fp)
+lw s6, -32(fp)
+lw s7, -36(fp)
+lw s8, -40(fp)
+lw s9, -44(fp)
+lw s10, -48(fp)
+lw s11, -52(fp)
+lw a0, -136(fp)
+lw ra, -4(fp)
+lw fp, -8(fp)
+addi sp, sp, 184
+addi sp, sp, 32
+li t6, 0
+jalr t6, ra, 0
+# Print the error message at a0 and ends the program
+.globl error
+error:
+  mv a1, a0                                # Move msg address to a1
+  li a0, @print_string                     # Code for print_string ecall
+  ecall                                    # Print error message in a1
+  li a1, 10                                # Load newline character
+  li a0, @print_char                       # Code for print_char ecall
+  ecall                                    # Print newline
+  li a0, @exit                             # Code for exit ecall
+  ecall                                    # Exit with code
+abort_17:                                  # Infinite loop
+  j abort_17                               # Prevent fallthrough
+
+
+# Allocate a0 bytes on the heap, returns pointer to start in a0
+.globl alloc
+alloc:
+  mv a1, a0                                # Move requested size to a1
+  li a0, @sbrk                             # Code for ecall: sbrk
+  ecall                                    # Request a1 bytes
+  li t6, 0
+  jalr t6, ra, 0                                    # Return to caller
+
+
+.data
+
+.globl msg_0
+msg_0:
+  .asciiz "null pointer"
+  .align 2
+
+
+.globl msg_1
+msg_1:
+  .asciiz "array index out of bounds"
+  .align 2
+
+
+.globl msg_extra
+msg_extra:
+  .asciiz "--- Error (Explicit) ---"
+  .align 2
 

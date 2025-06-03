@@ -1,76 +1,253 @@
-func Main()
-t0 = 4
-v0 = t0
-t1 = v0
-t0 = alloc(t1)
-w0 = t0
-t1 = v0
-t0 = alloc(t1)
-vmt_Fac = t0
-t0 = @FacComputeFac
-v0 = t0
-t0 = vmt_Fac
-t1 = v0
-[t0 + 0] = t1
-t0 = vmt_Fac
-v0 = t0
-t0 = w0
-t1 = v0
-[t0 + 0] = t1
-t0 = w0
-if0 t0 goto null1
-t1 = w0
-t0 = [t1 + 0]
-w1 = t0
-t1 = w1
-t0 = [t1 + 0]
-w1 = t0
-t0 = 6
-v0 = t0
-t1 = w1
-t0 = call t1(w0 v0)
-w2 = t0
-t0 = w2
-print(t0)
-goto main_end
-null1:
-error("null pointer")
-main_end:
-      return v0
+first pass was okay
 
-func FacComputeFac(this num)
-t0 = 1
-v0 = t0
-t1 = num
-t2 = v0
-t0 = t1 < t2
-w0 = t0
-t0 = w0
-if0 t0 goto if1_else
-t0 = 1
-num_aux = t0
-goto if1_end
-if1_else:
-t1 = this
-t0 = [t1 + 0]
-w1 = t0
-t1 = w1
-t0 = [t1 + 0]
-w1 = t0
-t0 = 1
-v0 = t0
-t1 = num
-t2 = v0
-t0 = t1 - t2
-w2 = t0
-t1 = w1
-t0 = call t1(this w2)
-w3 = t0
-t1 = num
-t2 = w3
-t0 = t1 * t2
-num_aux = t0
-if1_end:
-      return num_aux
+program name is 
 
+Spitting sparrowV file:
+  .equiv @sbrk, 9
+  .equiv @print_string, 4
+  .equiv @print_char, 11
+  .equiv @print_int, 1
+  .equiv @exit 10
+  .equiv @exit2, 17
+.text
+
+  jal Main                                 # Jump to Main
+  li a0, @exit                             # Code for ecall: exit
+  ecall
+
+.globl Main
+Main:
+sw fp, -8(sp)
+mv fp, sp
+li t6, 112
+sub sp, sp, t6
+sw ra, -4(fp)
+sw s1, -12(fp)
+sw s2, -16(fp)
+sw s3, -20(fp)
+sw s4, -24(fp)
+sw s5, -28(fp)
+sw s6, -32(fp)
+sw s7, -36(fp)
+sw s8, -40(fp)
+sw s9, -44(fp)
+sw s10, -48(fp)
+sw s11, -52(fp)
+li t0, 4
+sw t0, -56(fp)
+lw t1, -56(fp)
+mv a0, t1
+jal ra, alloc
+mv t0, a0
+sw t0, -60(fp)
+lw t1, -56(fp)
+mv a0, t1
+jal ra, alloc
+mv t0, a0
+sw t0, -64(fp)
+la t0, FacComputeFac
+sw t0, -56(fp)
+lw t0, -64(fp)
+lw t1, -56(fp)
+sw t1, 0(t0)
+lw t0, -64(fp)
+sw t0, -56(fp)
+lw t0, -60(fp)
+lw t1, -56(fp)
+sw t1, 0(t0)
+lw t0, -60(fp)
+li t6, 0
+bne t0, t6, m1
+jal t6, v1
+m1:
+lw t1, -60(fp)
+lw t0, 0(t1)
+sw t0, -68(fp)
+lw t1, -68(fp)
+lw t0, 0(t1)
+sw t0, -68(fp)
+li t0, 6
+sw t0, -56(fp)
+lw t1, -68(fp)
+li t6, 32
+sub sp, sp, t6
+sw a2, 0(sp)
+sw a3, 4(sp)
+sw a4, 8(sp)
+sw a5, 12(sp)
+sw a6, 16(sp)
+sw a7, 20(sp)
+lw t6, -60(fp)
+sw t6, 24(sp)
+lw t6, -56(fp)
+sw t6, 28(sp)
+jalr ra, t1, 0
+mv t0, a0
+sw t0, -72(fp)
+lw t0, -72(fp)
+mv a1, t0
+li a0, @print_int
+ecall
+li a1, 10                                # Load newline character
+li a0, @print_char                       # Code for print_char ecall
+ecall                                    # Print newline
+li t6, 0
+jal t6, v2
+v1:
+la a0, msg_1
+  mv a1, a0                                # Move msg address to a1
+  li a0, @print_string                     # Code for print_string ecall
+  ecall                                    # Print error message in a1
+  li a1, 10                                # Load newline character
+  li a0, @print_char                       # Code for print_char ecall
+  ecall                                    # Print newline
+  li a0, @exit                             # Code for exit ecall
+  ecall                                    # Exit with code
+v2:
+lw s1, -12(fp)
+lw s2, -16(fp)
+lw s3, -20(fp)
+lw s4, -24(fp)
+lw s5, -28(fp)
+lw s6, -32(fp)
+lw s7, -36(fp)
+lw s8, -40(fp)
+lw s9, -44(fp)
+lw s10, -48(fp)
+lw s11, -52(fp)
+lw a0, -56(fp)
+lw ra, -4(fp)
+lw fp, -8(fp)
+addi sp, sp, 112
+addi sp, sp, 24
+li t6, 0
+jalr t6, ra, 0
+.globl FacComputeFac
+FacComputeFac:
+sw fp, -8(sp)
+mv fp, sp
+li t6, 124
+sub sp, sp, t6
+sw ra, -4(fp)
+sw s1, -12(fp)
+sw s2, -16(fp)
+sw s3, -20(fp)
+sw s4, -24(fp)
+sw s5, -28(fp)
+sw s6, -32(fp)
+sw s7, -36(fp)
+sw s8, -40(fp)
+sw s9, -44(fp)
+sw s10, -48(fp)
+sw s11, -52(fp)
+li t0, 1
+sw t0, -56(fp)
+lw t1, 28(fp)
+lw t2, -56(fp)
+slt t0, t1, t2
+sw t0, -60(fp)
+lw t0, -60(fp)
+li t6, 0
+bne t0, t6, m2
+jal t6, v3
+m2:
+li t0, 1
+sw t0, -64(fp)
+li t6, 0
+jal t6, v4
+v3:
+lw t1, 24(fp)
+lw t0, 0(t1)
+sw t0, -68(fp)
+lw t1, -68(fp)
+lw t0, 0(t1)
+sw t0, -68(fp)
+li t0, 1
+sw t0, -56(fp)
+lw t1, 28(fp)
+lw t2, -56(fp)
+sub t0, t1, t2
+sw t0, -72(fp)
+lw t1, -68(fp)
+li t6, 32
+sub sp, sp, t6
+sw a2, 0(sp)
+sw a3, 4(sp)
+sw a4, 8(sp)
+sw a5, 12(sp)
+sw a6, 16(sp)
+sw a7, 20(sp)
+lw t6, 24(fp)
+sw t6, 24(sp)
+lw t6, -72(fp)
+sw t6, 28(sp)
+jalr ra, t1, 0
+mv t0, a0
+sw t0, -76(fp)
+lw t1, 28(fp)
+lw t2, -76(fp)
+mul t0, t1, t2
+sw t0, -64(fp)
+v4:
+lw s1, -12(fp)
+lw s2, -16(fp)
+lw s3, -20(fp)
+lw s4, -24(fp)
+lw s5, -28(fp)
+lw s6, -32(fp)
+lw s7, -36(fp)
+lw s8, -40(fp)
+lw s9, -44(fp)
+lw s10, -48(fp)
+lw s11, -52(fp)
+lw a0, -64(fp)
+lw ra, -4(fp)
+lw fp, -8(fp)
+addi sp, sp, 124
+addi sp, sp, 32
+li t6, 0
+jalr t6, ra, 0
+# Print the error message at a0 and ends the program
+.globl error
+error:
+  mv a1, a0                                # Move msg address to a1
+  li a0, @print_string                     # Code for print_string ecall
+  ecall                                    # Print error message in a1
+  li a1, 10                                # Load newline character
+  li a0, @print_char                       # Code for print_char ecall
+  ecall                                    # Print newline
+  li a0, @exit                             # Code for exit ecall
+  ecall                                    # Exit with code
+abort_17:                                  # Infinite loop
+  j abort_17                               # Prevent fallthrough
+
+
+# Allocate a0 bytes on the heap, returns pointer to start in a0
+.globl alloc
+alloc:
+  mv a1, a0                                # Move requested size to a1
+  li a0, @sbrk                             # Code for ecall: sbrk
+  ecall                                    # Request a1 bytes
+  li t6, 0
+  jalr t6, ra, 0                                    # Return to caller
+
+
+.data
+
+.globl msg_0
+msg_0:
+  .asciiz "null pointer"
+  .align 2
+
+
+.globl msg_1
+msg_1:
+  .asciiz "array index out of bounds"
+  .align 2
+
+
+.globl msg_extra
+msg_extra:
+  .asciiz "--- Error (Explicit) ---"
+  .align 2
 
